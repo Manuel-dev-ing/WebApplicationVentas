@@ -128,7 +128,6 @@ namespace WebApplicationVentas.Controllers
                         Cantidad = x.Cantidad,
                         Precio = x.Precio,
                         Total = x.Total
-
                     }).ToList()
                 };
 
