@@ -1,0 +1,67 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+
+/*estilos*/
+
+.cabecera-tabla {
+    background-color: #198754;
+}
+.table thead th{
+    color: white;
+    font-weight: 500;
+}
+
+/* ARCHIVO CREAR VENTA*/
+
+/*listas li ul*/
+.list-item{
+    cursor: pointer;
+}
+
+/*tabla productos*/
+#cantidad {
+    width: 3.2rem;
+    border: 1px solid #d9d6d6;
+}
+
+#cantidad:focus{
+    outline: none;
+}
+
+
+.borrarProducto {
+    cursor: pointer;
+    color: #b20b25;
+    text-decoration: none;
+}
+
+.borrarProducto:hover {
+    color: #df120f;
+}
+
+/*Alerta */
+.alerta-danger {
+    font-size: 1rem;
+}
+

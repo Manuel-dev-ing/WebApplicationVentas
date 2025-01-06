@@ -1,0 +1,174 @@
+﻿
+@{
+
+	ViewData["Title"] = "Ventas";
+
+}
+
+<div class="pagetitle">
+    <h1>Ventas</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Ventas">Consultar Ventas</a></li>
+            <li class="breadcrumb-item active">Crear Venta</li>
+        </ol>
+    </nav>
+</div><!-- End Page Title -->
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Datos del Cliente</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="tipo_documento_venta" class="form-label">Tipo documento Venta</label>
+                        <select id="tipo_documento_venta" class="form-select"></select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="Clientes" class="form-label">Cliente</label>
+                        <select id="Clientes" class="form-select"></select>
+                    </div>
+                </div>
+
+            </div>
+        </div><!-- End Card with header and footer -->
+        
+        
+    </div>
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Totales</h5>
+                <div class="p-3 border-bottom-0 border-start-0 border-end-0 border-dashed border"
+                     id="checkout-elem">
+                    <div class="d-flex justify-content-between align-items-center pb-3">
+                        <h5 class="m-0 fw-semibold fs-6">SubTotal</h5>
+                        <div class="px-2">
+                            <h5 class="m-0 fs-6" id="subtotal">$0</h5>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center pb-3">
+                        <h5 class="m-0 fw-semibold fs-6">IVA(16%)</h5>
+                        <div class="px-2">
+                            <h5 class="m-0 fs-6" id="iva">$0</h5>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center pb-3">
+                        <h5 class="m-0 fw-semibold fs-6">Total:</h5>
+                        <div class="px-2">
+                            <h5 class="m-0 fs-6" id="total">$0</h5>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2 col-6 mx-auto">
+                        <a class="btn btn-sm btn-primary text-center" id="pago" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            Proceder al Pago
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div><!-- End Card with header and footer -->
+
+    </div>
+
+    
+    
+   
+</div>
+<div class="col-lg-12">
+    <div class="card datosProducto">
+        <div class="card-body">
+            <h5 class="card-title titulo-datosProductos">Datos del Producto</h5>
+            <div class="col-md-12 mb-3 contenedor_datos-productos">
+                <div class="mb-2">
+                    <label class="form-check-label" for="inlineRadio1">Buscar Por:</label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input radioCodigoBarras" type="radio" name="inlineRadioOptions" id="radioCodigoBarras" checked>
+                        <label class="form-check-label" for="radioCodigoBarras">Codigo de barras</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input radioNombreProducto" type="radio" name="inlineRadioOptions" id="radioNombreProducto">
+                        <label class="form-check-label" for="radioNombreProducto">Nombre del producto</label>
+                    </div>
+                </div>
+
+
+                <input class="form-control search" type="search" name="buscar" id="buscar_producto" placeholder="Buscar productos..." autocomplete="off" />
+
+
+                <ul class="list-group rounded-3 lista-ul" id="lista">
+                </ul>
+            </div>
+
+            <table class="table table-hover table-responsive table-sm">
+                <thead class="cabecera-tabla">
+                    <tr>
+                        <th>Producto</th>
+                        <th>Precio</th>
+                        <th>Cantidad</th>
+                        <th>Total</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div><!-- End Card with header and footer -->
+
+</div>
+<!-- Toast -->
+<div class="toast-container position-fixed top-0 end-0 p-3">
+    <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-primary text-white">
+            <strong class="me-auto">Ventas POS</strong>
+         
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body fw-semibold">
+            Cambiaste el tipo de busqueda.
+        </div>
+    </div>
+</div>
+<!-- Fin Toast -->
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Recepcion de Efectivo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="col-md-12">
+                    <label for="totalPago" class="form-label">Total</label>
+                    <input id="totalPago" type="text" class="form-control" readonly>
+                </div>
+                <div class="col-md-12 mb-3">
+                    <label for="recibe" class="form-label">Recibe</label>
+                    <input id="recibe" type="number" min="0" class="form-control" required>
+                </div>
+                <div class="col-md-12">
+                    <label for="cambio" class="form-label">Cambio</label>
+                    <input id="cambio" type="number" min="0" class="form-control" readonly>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" id="btnventa" class="btn btn-success">Realizar Venta</button>
+            </div>
+        </div>
+    </div>
+</div><!-- Fin Modal -->
+
+
+@section Scripts{
+    <script src="~/js/Ventas.js"></script>
+}
+
+
+

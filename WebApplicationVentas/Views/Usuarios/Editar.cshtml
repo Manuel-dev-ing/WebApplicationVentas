@@ -1,0 +1,81 @@
+﻿@model UsuariosEditarViewModel
+@{
+
+	ViewData["Title"] = "editar usurio";
+}
+
+
+<div class="pagetitle">
+    <h1>Editar Usuario</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Usuarios">Home</a></li>
+            <li class="breadcrumb-item active">editar usuario</li>
+        </ol>
+    </nav>
+</div><!-- End Page Title -->
+
+<a class="btn btn-outline-primary btn-sm mb-4" asp-action="Index" asp-controller="Usuarios">Regresar</a>
+
+<div class="col-lg-10">
+
+    <div class="card">
+        <div class="card-body">
+
+            <!-- Vertical Form -->
+            <form class="row g-3 mt-3" asp-action="Editar" asp-controller="Usuarios">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                
+                <input asp-for="Id" type="hidden" />
+
+                <div class="col-md-6">
+                    <label asp-for="Nombre" class="form-label"></label>
+                    <input asp-for="Nombre" class="form-control" />
+                    <span asp-validation-for="Nombre" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="IdRol" class="form-label"></label>
+                    <select asp-for="IdRol" class="form-select" asp-items="Model.tiposRol"></select>
+                    <span asp-validation-for="IdRol" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Apellidos" class="form-label"></label>
+                    <input asp-for="Apellidos" type="text" class="form-control">
+                    <span asp-validation-for="Apellidos" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Correo" class="form-label"></label>
+                    <input asp-for="Correo" type="text" class="form-control">
+                    <span asp-validation-for="Correo" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Telefono" class="form-label"></label>
+                    <input asp-for="Telefono" type="text" class="form-control">
+                    <span asp-validation-for="Telefono" class="text-danger"></span>
+                </div>
+
+                <input asp-for="EsActivo" type="hidden"/>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <button type="reset" class="btn btn-secondary">Restablecer</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+}
+
+
+

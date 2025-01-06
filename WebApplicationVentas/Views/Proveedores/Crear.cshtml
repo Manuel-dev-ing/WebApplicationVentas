@@ -1,0 +1,98 @@
+﻿@model ProveedoresCreacionViewModel
+
+@{
+	ViewData["Title"] = "crear proveedor";
+}
+
+<div class="pagetitle">
+    <h1>creacion del proveedor</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Proveedores">Home</a></li>
+            <li class="breadcrumb-item active">crear proveedor</li>
+        </ol>
+    </nav>
+</div><!-- End Page Title -->
+
+<a class="btn btn-outline-primary btn-sm mb-4" asp-action="Index" asp-controller="Proveedores">Regresar</a>
+
+<div class="col-lg-10">
+
+    <div class="card">
+        <div class="card-body">
+
+            <!-- Vertical Form -->
+            <form class="row g-3 mt-3" asp-action="Guardar" asp-controller="Proveedores">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="col-md-6">
+                    <label asp-for="IdRubro" class="form-label"></label>
+                    <select asp-for="IdRubro" class="form-select" asp-items="Model.tiposRubros"></select>
+                    <span asp-validation-for="IdRubro" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="IdTipoDocuemto" class="form-label"></label>
+                    <select asp-for="IdTipoDocuemto" class="form-select" asp-items="Model.tiposDocumentos"></select>
+                    <span asp-validation-for="IdTipoDocuemto" class="text-danger"></span>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="Nombre" class="form-label"></label>
+                    <input asp-for="Nombre" type="text" class="form-control">
+                    <span asp-validation-for="Nombre" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Apellidos" class="form-label"></label>
+                    <input asp-for="Apellidos" type="text" class="form-control">
+                    <span asp-validation-for="Apellidos" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Email" class="form-label"></label>
+                    <input asp-for="Email" type="text" class="form-control">
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Telefono" class="form-label"></label>
+                    <input asp-for="Telefono" type="text" class="form-control">
+                    <span asp-validation-for="Telefono" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Calle" class="form-label"></label>
+                    <input asp-for="Calle" type="text" class="form-control">
+                    <span asp-validation-for="Calle" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Colonia" class="form-label"></label>
+                    <input asp-for="Colonia" type="text" class="form-control">
+                    <span asp-validation-for="Colonia" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="CodigoPostalCiudad" class="form-label"></label>
+                    <input asp-for="CodigoPostalCiudad" type="text" class="form-control">
+                    <span asp-validation-for="CodigoPostalCiudad" class="text-danger"></span>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <button type="reset" class="btn btn-secondary">Restablecer</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+}
+
+

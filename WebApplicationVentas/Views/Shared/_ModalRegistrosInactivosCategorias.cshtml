@@ -1,0 +1,57 @@
+﻿
+@{
+}
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Registros Inactivos</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <div class="d-flex mb-3">
+
+                    <div class="ms-auto p-2">
+                        <input type="search" class="form-control" placeholder="buscar" id="buscar" />
+                    </div>
+
+                </div>
+
+                <table class="table table-bordered table-hover table-responsive mb-5 table-sm">
+                    <thead class="cabecera-tabla">
+                        <tr>
+                            <th></th>
+                            <th>Nombre</th>
+                            <th>Fecha Registro</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Id</td>
+                                <td>@item.Nombre</td>
+                                <td>@item.FechaRegistro</td>
+                                <td>
+                                    <a class="btn btn-sm btn-outline-success" asp-route-id="@item.Id" asp-action="Restaurar" asp-controller="Almacenes"><i class="bi bi-recycle"></i> Restaurar</a>
+                                </td>
+
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div><!-- Fin Modal -->

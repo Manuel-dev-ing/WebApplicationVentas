@@ -1,0 +1,72 @@
+﻿@model RolModel
+
+@{
+	ViewData["Title"] = "Rol de Usuario";
+}
+
+<div class="pagetitle">
+	<h1>Rol de Usuarios</h1>
+
+</div><!-- End Page Title -->
+
+<!-- Modal -->
+<partial name="_ModalRegistrosRolInactivos" model="Model.rolInactivos" />
+<!-- Fin Modal -->
+
+
+<a class="btn btn-outline-primary btn-sm mb-4" asp-action="Crear" asp-controller="Rol" title="Crear nuevo rol">Nuevo Rol</a>
+
+
+<div class="d-flex mb-1">
+
+    <div class="ms-auto p-2">
+        <input type="search" class="form-control" placeholder="buscar" id="buscar" />
+    </div>
+
+</div>
+
+<div class="d-flex mb-1">
+
+    <div class="ms-auto p-2">
+        <a class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">Ver Registros Inactivos</a>
+
+    </div>
+
+</div>
+
+<table class="table table-bordered table-hover table-responsive mb-5 table-sm">
+    <thead class="cabecera-tabla">
+        <tr>
+            <th></th>
+            <th>Nombre</th>
+            <th>Fecha Registro</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.rolActivos)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.Descripcion</td>
+                <td>@item.Fecha</td>
+                <td>
+
+                    <a class="btn btn-sm btn-outline-warning" asp-route-id="@item.Id" asp-action="Editar" asp-controller="Rol" title="Editar"><i class="bi bi-pencil"></i></a>
+                    <a class="btn btn-sm btn-outline-danger" asp-route-id="@item.Id" asp-action="Eliminar" asp-controller="Rol" title="Eliminar"><i class="bi bi-trash"></i></a>
+
+                </td>
+
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+

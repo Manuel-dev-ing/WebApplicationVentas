@@ -1,0 +1,115 @@
+﻿@model ProductosCreacionViewModel
+
+@{
+
+    ViewData["Title"] = "Crear Producto";
+}
+
+
+<div class="pagetitle">
+    <h1>Productos</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Productos">Home</a></li>
+            <li class="breadcrumb-item">Productos</li>
+            
+        </ol>
+    </nav>
+</div><!-- End Page Title -->
+
+
+    <section class="section profile">
+      <div class="row">
+        <form class="row" asp-action="Guardar" asp-controller="Productos" enctype="multipart/form-data">
+            <div class="col-xl-4">
+
+                <div class="card">
+                <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+
+                    <img id="prevImg" class="rounded-circle">
+                    <div>
+                        <label asp-for="ImagenArchivo" class="form-label"></label>
+                        <input asp-for="ImagenArchivo" class="form-control" id="img" />
+                    </div>
+              
+                </div>
+                </div>
+
+                <div class="card" id="card-codigoBarras">
+                
+                    <div class="card-body profile-card pt-4 d-flex flex-column align-items-center card-body-codigoBarras">
+
+                        <img id="barcode" class="img-fluid">
+                        <div class="col-md-12 mt-3">
+                            <label asp-for="CodigoBarras" class="form-label"></label>
+                            <input asp-for="CodigoBarras" class="form-control" id="inputCodigoBarrras">
+                            <span asp-validation-for="CodigoBarras" class="text-danger"></span>
+                            <a id="generarCodigoBarras" class="btn btn-sm btn-primary mt-2">Generar</a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-8">
+
+                <div class="card">
+                    <div class="card-body pt-3">
+
+                        <!-- Multi Columns Form -->
+                        <div class="row g-3">
+                            
+                            <div class="col-md-6">
+                                <label asp-for="IdCategoria" class="form-label"></label>
+                                <select asp-for="IdCategoria" class="form-select" asp-items="Model.tiposCategorias"></select>
+                                <span asp-validation-for="IdCategoria" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="IdMarca" class="form-label"></label>
+                                <select asp-for="IdMarca" class="form-select" asp-items="Model.tiposMarcas"></select>
+                                <span asp-validation-for="IdMarca" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label asp-for="Descripcion" class="form-label"></label>
+                                <input asp-for="Descripcion" class="form-control">
+                                <span asp-validation-for="Descripcion" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label asp-for="StockMaximo" class="form-label"></label>
+                                <input asp-for="StockMaximo" type="number" min="1" class="form-control">
+                                <span asp-validation-for="StockMaximo" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="StockMinimo" class="form-label"></label>
+                                <input asp-for="StockMinimo" type="number" min="1" class="form-control">
+                                <span asp-validation-for="StockMinimo" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="Precio" class="form-label"></label>
+                                <input asp-for="Precio" class="form-control">
+                                <span asp-validation-for="Precio" class="text-danger"></span>
+                            </div>
+
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                                <button type="reset" class="btn btn-secondary">Reset</button>
+                            </div>
+
+                        </div>    
+                        
+                    </div>
+                </div>
+            </div>
+        </form><!-- End Multi Columns Form -->
+      </div>
+    </section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/previsualizarImagen.js"></script>
+    <script src="~/js/generarCodigoBarras.js"></script>
+
+}
