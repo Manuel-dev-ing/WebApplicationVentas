@@ -16,6 +16,8 @@ namespace WebApplicationVentas.Servicios
         IRepositorioProveedores repositorioProveedores { get; }
         IRepositorioRol repositorioRol { get; }
         IRepositorioVentas repositorioVentas { get; }
+        IRepositorioCompras repositorioCompras { get; }
+        IRepositorioStockProductos repositorioStockProductos { get; }
 
         Task<int> Complete();
     }
@@ -38,6 +40,10 @@ namespace WebApplicationVentas.Servicios
 
         public IRepositorioVentas repositorioVentas { get; private set; }
 
+        public IRepositorioCompras repositorioCompras { get; private set; }
+
+        public IRepositorioStockProductos repositorioStockProductos { get; private set; }
+
         public UnitOfWork(ApplicationDbContext context)
         {
             this.context = context;
@@ -52,7 +58,8 @@ namespace WebApplicationVentas.Servicios
             repositorioProveedores = new RepositorioProveedores(context);
             repositorioRol = new RepositorioRol(context);
             repositorioVentas = new RepositorioVentas(context);
-
+            repositorioCompras = new RepositorioCompras(context);
+            repositorioStockProductos = new RepositorioStockProductos(context);
         }
 
         public async Task<int> Complete()

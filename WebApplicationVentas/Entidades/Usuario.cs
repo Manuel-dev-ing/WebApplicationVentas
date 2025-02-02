@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace WebApplicationVentas.Entidades;
 
-public class Usuario
+public partial class Usuario
 {
     public int Id { get; set; }
 

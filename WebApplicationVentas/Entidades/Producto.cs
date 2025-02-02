@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace WebApplicationVentas.Entidades;
 
-public class Producto
+public partial class Producto
 {
     public int Id { get; set; }
 
@@ -27,12 +27,9 @@ public class Producto
 
     public DateTime FechaRegistro { get; set; }
 
-    public virtual ICollection<DetalleEntradaProducto> DetalleEntradaProductos { get; set; } = new List<DetalleEntradaProducto>();
+    public virtual Categoria IdCategoriaNavigation { get; set; }
 
-
-    public Categoria IdCategoriaNavigation { get; set; }
-
-    public Marca IdMarcaNavigation { get; set; }
+    public virtual Marca IdMarcaNavigation { get; set; }
 
     public virtual ICollection<StockProducto> StockProductos { get; set; } = new List<StockProducto>();
 }

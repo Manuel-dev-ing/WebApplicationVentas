@@ -102,6 +102,21 @@ namespace WebApplicationVentas.Controllers
             return productos;
         }
 
+        //obtener productos por fecha
+        [HttpPost("obtenerVentasFecha")]
+        public async Task<ActionResult> obtenerProductoFecha([FromBody] ConsultarVentaDTO consultarVentaDTO)
+        {
+            if (string.IsNullOrWhiteSpace(consultarVentaDTO.fechaFin) && string.IsNullOrWhiteSpace(consultarVentaDTO.fechaInicio))
+            {
+                return BadRequest("Las fechas no pueden estar vacías. Por favor, proporciona ambas fechas.");
+            }
+
+            var resultado = await unitOfWork.repositorioVentas.obtenerVentasPorFecha(consultarVentaDTO.fechaInicio, consultarVentaDTO.fechaFin);
+
+            return Ok(resultado);
+
+        } 
+
         [HttpPost("venta")]
         public async Task<IActionResult> venta([FromBody] VentaDTO ventaDTO)
         {
@@ -112,19 +127,41 @@ namespace WebApplicationVentas.Controllers
                     return BadRequest("Datos invalidos");
                 }
 
+
+                // Validar stock y el producto existe 
+                foreach (var item in ventaDTO.productos)
+                {
+                    var stockProducto = await unitOfWork.repositorioStockProductos.obtenerStockProductoPorId(item.IdProducto);
+                    if (stockProducto == null)
+                    {
+                        return BadRequest(new { mensaje = $"No existte el producto {item.DescripcionProducto}" });
+
+                    }
+                    else
+                    {
+                        if (item.Cantidad > stockProducto.StockActual)
+                        {
+                            return BadRequest(new { mensaje = $"No hay Stock para el producto {item.DescripcionProducto}" });
+                        }
+                    }
+
+                 
+                }
+                //fin validar stock
+
                 var id_usuario = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
                 var venta = new Venta()
                 {
                     IdTipoDocumentoVenta = Convert.ToInt32(ventaDTO.idDocVenta),
                     IdUsuario = id_usuario,
+                    NombreCliente = ventaDTO.NombreCliente,
                     SubTotal = Convert.ToDecimal(ventaDTO.SubTotal),
                     Total = Convert.ToDecimal(ventaDTO.Total),
                     FechaRegistro = DateTime.Now,
-                    DetalleVentas = ventaDTO.productos.Select(x => new DetalleVenta
+                    DetalleVenta = ventaDTO.productos.Select(x => new DetalleVenta
                     {
                         IdProducto = x.IdProducto,
-                        DescripcionProducto = x.DescripcionProducto,
                         Cantidad = x.Cantidad,
                         Precio = x.Precio,
                         Total = x.Total
@@ -132,9 +169,20 @@ namespace WebApplicationVentas.Controllers
                 };
 
                 unitOfWork.repositorioVentas.crear(venta);
-                await unitOfWork.Complete();
 
-                return Ok(new { Mensaje = "Venta realizada con éxito" });
+
+                foreach (var item in ventaDTO.productos)
+                {
+                    var stockProducto = await unitOfWork.repositorioStockProductos.obtenerStockProductoPorId(item.IdProducto);
+
+                    stockProducto.StockActual -= item.Cantidad;
+                    unitOfWork.repositorioStockProductos.actualizar(stockProducto);
+
+                }
+
+
+                await unitOfWork.Complete();
+                return Ok();
 
             }
             catch (Exception ex)
@@ -145,23 +193,97 @@ namespace WebApplicationVentas.Controllers
 
         }
 
-        //[HttpPost("numero")]
-        //public IActionResult numero([FromBody] PruebaDTO pruebaDTO)
-        //{
-        //    try
-        //    {
-        //        if (pruebaDTO == null || pruebaDTO.numero <= 0)
-        //        {
-        //            return BadRequest(new { mensaje = "Número no válido" });
-        //        }
+        // ENTRADA DE PRODUCTOS
+        [HttpGet("obtenerAlmacenes")]
+        public async Task<List<AlmacenesDTO>> almacenes()
+        {
 
-        //        return Ok(new { mensaje = $"Venta realizada con éxito para el número {pruebaDTO.numero}" });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, new { mensaje = "Ocurrió un error interno", detalle = ex.Message });
-        //    }
-        //}
+            var almacenes = await unitOfWork.repositorioCompras.listadoAlmacenes();
+
+            return almacenes;
+        }
+
+        [HttpGet("obtenerProveedores")]
+        public async Task<List<ProveedoresDTO>> proveedores()
+        {
+
+            var proveedores = await unitOfWork.repositorioCompras.listadoProveedores();
+
+            return proveedores;
+        }
+
+        [HttpPost("entradaProducto")]
+        public async Task<IActionResult> EntradaProducto([FromBody] CompraDTO compraDTO)
+        {
+            try
+            {
+                if (compraDTO == null || compraDTO.productos == null)
+                {
+                    return BadRequest("Datos invalidos");
+                }
+
+                var entrada = new EntradaProducto()
+                {
+                    IdAlmacen = Convert.ToInt32(compraDTO.IdAlmacen),
+                    IdProveedor = Convert.ToInt32(compraDTO.IdProveedor),
+                    FechaRegistro = DateTime.UtcNow,
+                    SubTotal = compraDTO.SubTotal,
+                    Total = compraDTO.Total,
+                    DetalleEntradaProductos = compraDTO.productos.Select(a => new DetalleEntradaProducto()
+                    {
+                        IdProducto = a.IdProducto,
+                        Cantidad = a.Cantidad,
+                        Precio = a.Precio,
+                        Total = a.Total
+                    }).ToList()
+
+                };
+
+                unitOfWork.repositorioCompras.guardar(entrada);
+
+
+                //Insertar en Stock Productos
+                foreach (var item in compraDTO.productos)
+                {
+                    var stockProducto = await unitOfWork.
+                                        repositorioStockProductos.obtenerProductoAlmacen(item.IdProducto, Convert.ToInt32(compraDTO.IdAlmacen));
+
+                    if (stockProducto != null)
+                    {
+                        // si el producto ya existe en el stock, actualizar el registro
+                        stockProducto.StockActual += item.Cantidad;
+                        stockProducto.Precio = item.Precio;
+                        unitOfWork.repositorioStockProductos.actualizar(stockProducto);
+
+                    }
+                    else
+                    {
+                        // si no existe, crear un nuevo registro en StockProducto
+                        var nuevoStock = new StockProducto()
+                        {
+                            IdProducto = item.IdProducto,
+                            IdAlmacen = Convert.ToInt32(compraDTO.IdAlmacen),
+                            StockActual = item.Cantidad,
+                            Precio = item.Precio
+                        };
+
+                        await unitOfWork.repositorioStockProductos.guardar(nuevoStock);
+                    }
+
+                }
+
+                await unitOfWork.Complete();
+                return Ok();
+
+            }
+            catch (Exception ex)
+            {
+
+                return StatusCode(500, new { mensaje = "Ocurrió un error interno", detalle = ex.Message });
+            }
+
+
+        }
 
     }
 }

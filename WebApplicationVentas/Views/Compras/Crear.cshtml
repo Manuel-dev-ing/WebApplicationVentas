@@ -1,16 +1,13 @@
-﻿
-@{
-
-	ViewData["Title"] = "Ventas";
-
+﻿@{
+	ViewData["Title"] = "Entrada de Productos";
 }
 
 <div class="pagetitle">
-    <h1>Ventas</h1>
+    <h1>Entrada de Productos</h1>
     <nav>
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Ventas">Consultar Ventas</a></li>
-            <li class="breadcrumb-item active">Crear Venta</li>
+            <li class="breadcrumb-item"><a>Home</a></li>
+            <li class="breadcrumb-item active">Entrada de Productos</li>
         </ol>
     </nav>
 </div><!-- End Page Title -->
@@ -21,21 +18,21 @@
             <div class="card-body">
                 <h5 class="card-title">Datos del Cliente</h5>
                 <div class="row">
-                    <div class="col-md-6">
-                        <label for="tipo_documento_venta" class="form-label">Tipo documento Venta</label>
-                        <select id="tipo_documento_venta" class="form-select"></select>
+                    <div class="col-md-5">
+                        <label for="almacenes" class="form-label">Almacenes</label>
+                        <select id="almacenes" class="form-select"></select>
                     </div>
-                    <div class="col-md-6">
-                        <label for="Clientes" class="form-label">Cliente</label>
-                        <select id="Clientes" class="form-select"></select>
+                    <div class="col-md-7">
+                        <label for="proveedor" class="form-label">Proveedor</label>
+                        <select id="proveedor" class="form-select"></select>
                     </div>
                 </div>
 
             </div>
         </div><!-- End Card with header and footer -->
-        
-        
+
     </div>
+
     <div class="col-lg-4">
         <div class="card">
             <div class="card-body">
@@ -62,7 +59,7 @@
                         </div>
                     </div>
                     <div class="d-grid gap-2 col-6 mx-auto">
-                        <a class="btn btn-sm btn-primary text-center" id="pago" data-bs-toggle="modal" data-bs-target="#exampleModalRecepcionEfectivo">
+                        <a class="btn btn-sm btn-primary text-center" id="pago" >
                             Proceder al Pago
                         </a>
                     </div>
@@ -73,9 +70,6 @@
 
     </div>
 
-    
-    
-   
 </div>
 <div class="col-lg-12">
     <div class="card datosProducto">
@@ -112,19 +106,20 @@
                         <th></th>
                     </tr>
                 </thead>
-                <tbody id="tbodyProductos">
+                <tbody>
                 </tbody>
             </table>
         </div>
     </div><!-- End Card with header and footer -->
 
 </div>
+
 <!-- Toast -->
 <div class="toast-container position-fixed top-0 end-0 p-3">
     <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="toast-header bg-primary text-white">
             <strong class="me-auto">Ventas POS</strong>
-         
+
             <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
         <div class="toast-body fw-semibold">
@@ -134,41 +129,15 @@
 </div>
 <!-- Fin Toast -->
 
-<!-- Modal -->
-<div class="modal fade" id="exampleModalRecepcionEfectivo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Recepcion de Efectivo</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="col-md-12">
-                    <label for="totalPago" class="form-label">Total</label>
-                    <input id="totalPago" type="text" class="form-control" readonly>
-                </div>
-                <div class="col-md-12 mb-3">
-                    <label for="recibe" class="form-label">Recibe</label>
-                    <input id="recibe" type="number" min="0" class="form-control" required>
-                </div>
-                <div class="col-md-12">
-                    <label for="cambio" class="form-label">Cambio</label>
-                    <input id="cambio" type="number" min="0" class="form-control" readonly>
-                </div>
-
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <button type="button" id="btnventa" class="btn btn-success">Realizar Venta</button>
-            </div>
-        </div>
-    </div>
-</div><!-- Fin Modal -->
 
 
-@section Scripts{
-    <script src="~/js/Ventas.js"></script>
+@section Scripts {
+    <script src="~/js/compras.js"></script>
 }
+
+
+
+
 
 
 

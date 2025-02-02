@@ -11,6 +11,7 @@ namespace WebApplicationVentas.Servicios
         Task<List<documentosVentasDTO>> documentosVentas();
         Task<List<ClienteDTO>> listadoClientes();
         Task<List<ProductosDTO>> listadoProductos();
+        Task<List<VentasListadoDTO>> obtenerVentasPorFecha(string fechaInicio, string fechaFin);
     }
 
 
@@ -84,10 +85,27 @@ namespace WebApplicationVentas.Servicios
             context.AddAsync(venta);
         }
 
+        public async Task<List<VentasListadoDTO>> obtenerVentasPorFecha(string fechaInicio, string fechaFin)
+        {
+            var dateStart = Convert.ToDateTime(fechaInicio);
+            var dateEnd = Convert.ToDateTime(fechaFin);
+
+
+            var ventas = await context.Ventas
+                .Include(x => x.IdUsuarioNavigation)
+                .Where(v => v.FechaRegistro >= dateStart && v.FechaRegistro <= dateEnd)
+                .Select(a => new VentasListadoDTO(){
+                    Id = a.Id,
+                    Usuario = a.IdUsuarioNavigation.Nombre + " " + a.IdUsuarioNavigation.Apellidos,
+                    Cliente = a.NombreCliente,
+                    SubTotal = a.SubTotal,
+                    Total = a.Total,
+                    Fecha = a.FechaRegistro
+                }).ToListAsync();
+
+            return ventas;
+        }
+
     }
-
-
-
-
     
 }

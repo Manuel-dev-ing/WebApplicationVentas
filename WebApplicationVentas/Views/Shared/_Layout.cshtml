@@ -1,8 +1,6 @@
 ﻿@using System.Security.Claims
 @{
     var nombre = User.FindFirst(ClaimTypes.Name)?.Value;
-    
-
 }
 
 <!DOCTYPE html>
@@ -286,6 +284,30 @@
                     <span>Productos</span>
                 </a>
             </li><!-- End Register Page Nav -->
+             <li class="nav-item">
+                <a class="nav-link collapsed" asp-action="Index" asp-controller="StockProcductos">
+                    <i class="bi bi-card-list"></i>
+                    <span>Stock Productos</span>
+                </a>
+            </li><!-- End Register Page Nav -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-target="#compras-nav" data-bs-toggle="collapse" href="#">
+                    <i class="bi bi-journal-text"></i><span>Entradas de Productos</span><i class="bi bi-chevron-down ms-auto"></i>
+                </a>
+                <ul id="compras-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+                    <li>
+                        <a asp-action="Crear" asp-controller="Compras">
+                            <i class="bi bi-circle"></i><span>Entradas de Productos</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-action="Index" asp-controller="Compras">
+                            <i class="bi bi-circle"></i><span>Consultar</span>
+                        </a>
+                    </li>
+
+                </ul>
+            </li><!-- End Forms Nav -->
 
             <li class="nav-item">
                 <a class="nav-link collapsed" data-bs-target="#ventas-nav" data-bs-toggle="collapse" href="#">
@@ -362,7 +384,12 @@
 
     <!-- Template Main JS File -->
     <script src="~/assets/js/main.js"></script>
+    <script src="~/lib/sweetalert2/sweetalert2.all.min.js"></script>
 
+    <!-- JS File -->
+    <script src="~/js/notificaciones.js"></script>
+    
+    
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -1,32 +1,125 @@
-﻿console.log("Ventas js")
+﻿console.log("compras js")
 const tablaProductos = document.querySelector('.table tbody')
 const Tabla = document.querySelector('.table')
 const tbody = document.querySelector('tbody')
 const lista = document.querySelector('#lista');
-const titulo = document.querySelector('.titulo-datosProductos')
-const btnPago = document.querySelector('#pago')
-const btnVenta = document.querySelector('#btnventa')
 
 const card = document.querySelector('.datosProducto')
 
+const btnPago = document.querySelector('#pago')
+
 var productosLS = JSON.parse(localStorage.getItem('Productos')) || []
+
 
 events()
 
 function events() {
     card.addEventListener('click', seleccionarTipoBusqueda)
-    btnPago.addEventListener('click', realizarPago)
-    btnVenta.addEventListener('click', realizarVenta)
-
-    document.addEventListener('DOMContentLoaded', (event) => {
+    btnPago.addEventListener('click', realizarCompra)
+    document.addEventListener('DOMContentLoaded', () => {
         var arrayProductos = [];
 
-        mostrarProductos();
-        obtenerClientes();
-        obtenerDocumentosVentas();
-        tipoBusqueda();
-        obtenerProductos();
+        mostrarProductos()
+        obtenerAlmacenes()
+        obtenerProveedores()
+        obtenerProductos()
+        tipoBusqueda()
 
+    })
+
+
+}
+
+// DATOS
+
+async function obtenerAlmacenes() {
+    var url = "/api/productos/obtenerAlmacenes"
+
+    const respuest = await fetch(url, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+
+    var almacenes = await respuest.json();
+    mostrarAlmacenes(almacenes)
+}
+
+function mostrarAlmacenes(almacenes) {
+
+    almacenes.forEach(almacen => {
+        const option = document.createElement('option');
+        option.value = almacen.id
+        option.innerText = almacen.descripcion
+        if (option.value === '1') {
+            option.selected = true;
+        }
+
+        document.querySelector('#almacenes').appendChild(option)
+
+    })
+
+}
+
+async function obtenerProveedores() {
+    var url = "/api/productos/obtenerProveedores"
+
+    const respuest = await fetch(url, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+
+    var proveedores = await respuest.json();
+    mostrarProveedores(proveedores)
+}
+
+function mostrarProveedores(proveedores) {
+    proveedores.forEach(proveedor => {
+        const option = document.createElement('option');
+        option.value = proveedor.id
+        option.innerText = proveedor.nombre
+        if (option.value === '1') {
+            option.selected = true;
+        }
+
+        document.querySelector('#proveedor').appendChild(option)
+
+    })
+
+
+}
+
+async function obtenerProductos() {
+    var url = "/api/productos/obtenerProductos"
+
+    const respuest = await fetch(url, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+
+    arrayProductos = await respuest.json();
+
+}
+
+
+// Buscar Productos
+// funcion buscar por..
+function tipoBusqueda() {
+    document.querySelectorAll("input[type='radio']").forEach(radio => {
+        if (radio.checked && radio.id === 'radioCodigoBarras') {
+            
+            buscarPorCodigoBarras()
+            return;
+        }
+        if (radio.checked && radio.id === 'radioNombreProducto') {
+            buscarProductos();
+
+        }
     })
 
 }
@@ -49,129 +142,6 @@ function seleccionarTipoBusqueda(e) {
     }
 
 }
-
-// DATOS DEL CLIENTE
-
-async function obtenerClientes() {
-    var url = "/api/productos/obtenerClientes"
-
-    const respuest = await fetch(url, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-
-    var clientes = await respuest.json();
-    mostrarClientes(clientes)
-}
-
-function mostrarClientes(clientes) {
-
-    clientes.forEach(cliente => {
-        const option = document.createElement('option');
-        option.value = cliente.id
-        option.innerText = cliente.nombre + " " + cliente.apellidos
-        if (option.value === '6') {
-            option.selected = true;
-        }
-
-        document.querySelector('#Clientes').appendChild(option)
-
-    })
-
-}
-
-
-async function obtenerDocumentosVentas() {
-    var url = "/api/productos/obtenerDocumentosVentas"
-
-    const respuest = await fetch(url, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-
-    var docVentas = await respuest.json();
-
-    mostrarDocumentosVentas(docVentas)
-}
-
-function mostrarDocumentosVentas(docVentas) {
-
-    docVentas.forEach(doc => {
-
-        const option = document.createElement("option");
-        option.value = doc.id
-        option.innerText = doc.descripcion
-
-        document.querySelector('#tipo_documento_venta').appendChild(option);
-    })
-
-
-}
-// FIM Datos del cliente
-
-
-//DATOS DEL PRODUCTO
-
-//obtener productos
-
-async function obtenerProductos() {
-    var url = "/api/productos/obtenerProductos"
-
-    const respuest = await fetch(url, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-
-    arrayProductos = await respuest.json();
-}
-
-
-// Buscar Productos
-// funcion buscar por..
-function tipoBusqueda() {
-    document.querySelectorAll("input[type='radio']").forEach(radio => {
-        if (radio.checked && radio.id === 'radioCodigoBarras') {
-            buscarPorCodigoBarras()
-            return;
-        }
-        if (radio.checked && radio.id === 'radioNombreProducto') {
-            buscarProductos();
-            
-        }
-    })
-
-}
-
-function buscarProductos() {
-    document.querySelector('#buscar_producto').value = '';
-    document.querySelector('#buscar_producto').addEventListener('keyup', (event) => {
-        console.log('buscar productos')
-
-        var query = event.target.value
-    
-        if (query != "") {
-            const productos = arrayProductos.filter((product) => product.descripcion.includes(query))
-            console.log(productos);
-            mostrarListadoProductos(productos);
-            
-        } else {
-            query = "";
-            mostrarListadoProductos(query);
-           
-
-           
-        }
-
-        
-    })
-}
-
 function buscarPorCodigoBarras() {
 
     document.querySelector('.search').addEventListener('keyup', (e) => {
@@ -192,16 +162,38 @@ function buscarPorCodigoBarras() {
             prod["cantidad"] = 1
 
 
-            insertarProducto(prod)    
+            insertarProducto(prod)
         }
 
     })
-    
+
 
 }
 
 
-//mostrar productos
+function buscarProductos() {
+    document.querySelector('#buscar_producto').value = '';
+    document.querySelector('#buscar_producto').addEventListener('keyup', (event) => {
+        console.log('buscar productos')
+
+        var query = event.target.value
+
+        if (query != "") {
+            const productos = arrayProductos.filter((product) => product.descripcion.includes(query))
+            console.log(productos);
+            mostrarListadoProductos(productos);
+
+        } else {
+            query = "";
+            mostrarListadoProductos(query);
+
+        }
+
+
+    })
+}
+
+//mostrar listado productos
 function mostrarListadoProductos(productos) {
     var precio;
     var id;
@@ -232,12 +224,12 @@ function mostrarListadoProductos(productos) {
             }
             precio = product.precio;
 
-            
+
 
             lista.appendChild(li)
         })
-        
-  
+
+
     }
 }
 
@@ -300,7 +292,7 @@ function insertarProducto(products) {
 
 
     tablaProductos.appendChild(row)
-    
+
     guardarProductosLS(products)
     mostrarTotales();
 
@@ -317,7 +309,7 @@ function mostrarProductos() {
     limpiarTBody()
 
     productosLS.forEach(prodt => {
-        
+
         const { id, descripcion, codigoBarras, categoria, marca, precio, cantidad } = prodt
 
         const row = document.createElement('tr');
@@ -342,7 +334,7 @@ function mostrarProductos() {
             let cantidad = parseInt(inputCantidad.value)
             actualizarCantidad({ ...prodt, cantidad })
         }
-       
+
         tdCantidad.appendChild(inputCantidad)
         //fin cantidad
 
@@ -378,7 +370,7 @@ function mostrarProductos() {
 
         tablaProductos.appendChild(row)
     })
-        mostrarTotales()
+    mostrarTotales()
 
 
 }
@@ -391,16 +383,12 @@ function calcularTotal(cantidad, total) {
 
 //Eliminar Productos
 function eliminarProducto(id) {
-    console.log("eliminando... ", id)
-
     if (id) {
         console.log('Si existe el id.')
         productosLS = productosLS.filter(prod => prod.id !== id)
         sincronizarLS()
         mostrarProductos();
     }
-
-
 }
 
 function limpiarTBody() {
@@ -412,6 +400,7 @@ function limpiarTBody() {
 function sincronizarLS() {
     localStorage.setItem('Productos', JSON.stringify(productosLS))
 }
+
 
 //Muestra Totales
 function actualizarCantidad(producto) {
@@ -433,10 +422,11 @@ function actualizarCantidad(producto) {
             mostrarProductos()
 
         }
-        
+
     }
-    
+
 }
+
 function mostrarTotales() {
     const subTotal = document.querySelector('#subtotal')
     const Iva = document.querySelector('#iva')
@@ -475,59 +465,24 @@ function mostrarAlerta(mensaje) {
         setTimeout(() => {
             alerta.remove()
 
-        }, 3000)         
-    }   
+        }, 3000)
+    }
 }
 
 function mostrarToast() {
-    
+
     const toastLiveExample = document.getElementById('liveToast')
     const toast = new bootstrap.Toast(toastLiveExample)
 
     toast.show()
     console.log('Mostrando toast...')
-    
+
 }
 
-
-function ocultarModalRecepcionEfectivo() {
-    //var modal = document.getElementById('exampleModal');
-    bootstrap.Modal.getInstance(document.getElementById('exampleModalRecepcionEfectivo')).hide();
-
-    console.log('Ocultando modal...')
-}
-
-// Venta
-function realizarPago() {
-    const total = document.querySelector('#total').textContent
-    const inputTotal = document.querySelector('#totalPago')
-    inputTotal.value = total
-    //let caracter = '$'
-    //total = parseInt(total.replace(caracter, ''))
-    console.log(total)
-    calcularCambio(inputTotal.value)
-}
-function calcularCambio(total) {
-    const inputCambio = document.querySelector('#cambio')
-
-    document.querySelector('#recibe').addEventListener('keyup', (e) => {
-        let Cantidad = parseInt(e.target.value)
-        let caracter = '$'
-        let Total = parseFloat(total.replace(caracter, ''))
-        let resultado = Cantidad - Total
-
-        resultado = Math.floor(resultado)
-
-        inputCambio.value = resultado
-
-    })
-}
-
-async function realizarVenta() {
+async function realizarCompra() {
     console.log('click btn realizar Venta: ')
-    const idDocVenta = document.querySelector('#tipo_documento_venta').value
-    const idCliente = document.querySelector('#Clientes')
-    const nombreCliente = idCliente.options[idCliente.selectedIndex].text
+    const idAlmacen = document.querySelector('#almacenes').value
+    const proveedor = document.querySelector('#proveedor').value
     let subtotal = document.querySelector('#subtotal').textContent
     let total = document.querySelector('#total').textContent
     let products = []
@@ -537,8 +492,8 @@ async function realizarVenta() {
     subtotal = parseFloat(subtotal.replace(caracter, ''))
 
     let data = {
-        idDocVenta: idDocVenta,
-        NombreCliente: nombreCliente,
+        IdProveedor: proveedor,
+        IdAlmacen: idAlmacen,
         SubTotal: subtotal,
         Total: total,
         productos: []
@@ -559,10 +514,10 @@ async function realizarVenta() {
         data.productos.push(item)
     })
 
-        console.log("Objeto Productos: ", data)
-   
+    console.log("Objeto Productos: ", data)
+
     try {
-        const url = "/api/productos/venta"
+        const url = "/api/productos/entradaProducto"
         console.log("url: ", url)
         const respuesta = await fetch(url, {
             method: "POST",
@@ -573,54 +528,18 @@ async function realizarVenta() {
         });
 
         console.log(respuesta)
-        
 
         if (respuesta.ok) {
             console.log("OK")
-            ocultarModalRecepcionEfectivo()
-
-            mostrarAlerta("Venta realizada exitosamente", "exito")
+            mostrarAlerta('Productos registrados correctamente', 'exito')
+            limpiarTBody()
+            limpiarTotales()
             localStorage.clear();
-            limpiarTBody();
-            limpiarTotales();
-
-        } else {
-
-            const resultado = await respuesta.json()
-            console.log(resultado)
-            ocultarModalRecepcionEfectivo()
-
-            mostrarAlerta(resultado.mensaje, "error")
-
         }
-
-        
 
     } catch (e) {
         console.log(e)
     }
-    
-}
-
-function limpiarTabla() {
-    const tabla = document.querySelector('#tbodyProductos')
-
-    while (tabla.firstChild) {
-
-        tabla.removeChild(tabla.firstChild)
-
-    }
-
-}
-
-function limpiarTotales() {
-    let subtotal = document.querySelector('#subtotal')
-    let iva = document.querySelector('#iva')
-    let total = document.querySelector('#total')
-
-    subtotal.textContent = '$0'
-    iva.textContent = '$0'
-    total.textContent = '$0'
 }
 
 function mostrarAlerta(mensaje, tipo) {
@@ -649,4 +568,18 @@ function mostrarAlerta(mensaje, tipo) {
 
 
 }
+function limpiarTotales() {
+    let subtotal = document.querySelector('#subtotal')
+    let iva = document.querySelector('#iva')
+    let total = document.querySelector('#total')
+
+    subtotal.textContent = '$0'
+    iva.textContent = '$0'
+    total.textContent = '$0'
+}
+
+
+
+
+
 

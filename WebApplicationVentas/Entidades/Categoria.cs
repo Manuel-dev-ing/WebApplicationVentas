@@ -13,7 +13,5 @@ public partial class Categoria
 
     public DateTime FechaRegistro { get; set; }
 
-    public virtual ICollection<DetalleVenta> DetalleVenta { get; set; } = new List<DetalleVenta>();
-
     public virtual ICollection<Producto> Productos { get; set; } = new List<Producto>();
 }

@@ -37,7 +37,7 @@ namespace WebApplicationVentas.Controllers
         }
 
         [HttpPost]
-        public IActionResult Guardar(ClienteViewModel modelo)
+        public async Task<IActionResult> Guardar(ClienteViewModel modelo)
         {
 
             if (!ModelState.IsValid)
@@ -59,7 +59,7 @@ namespace WebApplicationVentas.Controllers
 
 
             unitOfWork.repositorioClientes.guardar(cliente);
-            unitOfWork.Complete();
+            await unitOfWork.Complete();
 
             return RedirectToAction("Index", "Clientes");
         }

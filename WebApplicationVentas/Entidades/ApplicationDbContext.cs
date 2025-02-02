@@ -125,12 +125,9 @@ public partial class ApplicationDbContext : DbContext
         {
             entity.ToTable("detalle_entrada_productos");
 
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("id");
-            entity.Property(e => e.Cantidad)
-                .HasColumnType("decimal(10, 2)")
-                .HasColumnName("cantidad");
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Cantidad).HasColumnName("cantidad");
+            entity.Property(e => e.IdEntradaProducto).HasColumnName("id_entrada_producto");
             entity.Property(e => e.IdProducto).HasColumnName("id_producto");
             entity.Property(e => e.Precio)
                 .HasColumnType("decimal(10, 2)")
@@ -139,9 +136,9 @@ public partial class ApplicationDbContext : DbContext
                 .HasColumnType("decimal(10, 2)")
                 .HasColumnName("total");
 
-            entity.HasOne(d => d.IdProductoNavigation).WithMany(p => p.DetalleEntradaProductos)
-                .HasForeignKey(d => d.IdProducto)
-                .HasConstraintName("FK_detalle_entrada_productos_productos");
+            entity.HasOne(d => d.IdEntradaProductoNavigation).WithMany(p => p.DetalleEntradaProductos)
+                .HasForeignKey(d => d.IdEntradaProducto)
+                .HasConstraintName("FK_detalle_entrada_productos_entrada_productos");
         });
 
         modelBuilder.Entity<DetalleVenta>(entity =>
@@ -150,10 +147,6 @@ public partial class ApplicationDbContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Cantidad).HasColumnName("cantidad");
-            entity.Property(e => e.DescripcionProducto)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("descripcion_producto");
             entity.Property(e => e.IdProducto).HasColumnName("id_producto");
             entity.Property(e => e.IdVenta).HasColumnName("id_venta");
             entity.Property(e => e.Precio)
@@ -163,7 +156,7 @@ public partial class ApplicationDbContext : DbContext
                 .HasColumnType("decimal(10, 2)")
                 .HasColumnName("total");
 
-            entity.HasOne(d => d.IdVentaNavigation).WithMany(p => p.DetalleVentas)
+            entity.HasOne(d => d.IdVentaNavigation).WithMany(p => p.DetalleVenta)
                 .HasForeignKey(d => d.IdVenta)
                 .HasConstraintName("FK_detalle_ventas_ventas");
         });
@@ -173,19 +166,16 @@ public partial class ApplicationDbContext : DbContext
             entity.ToTable("entrada_productos");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.FechaEntradaProducto)
-                .HasColumnType("datetime")
-                .HasColumnName("fecha_entrada_producto");
             entity.Property(e => e.FechaRegistro)
                 .HasColumnType("datetime")
                 .HasColumnName("fecha_registro");
             entity.Property(e => e.IdAlmacen).HasColumnName("id_almacen");
             entity.Property(e => e.IdProveedor).HasColumnName("id_proveedor");
             entity.Property(e => e.SubTotal)
-                .HasColumnType("decimal(10, 0)")
+                .HasColumnType("decimal(10, 2)")
                 .HasColumnName("sub_total");
             entity.Property(e => e.Total)
-                .HasColumnType("decimal(10, 0)")
+                .HasColumnType("decimal(10, 2)")
                 .HasColumnName("total");
 
             entity.HasOne(d => d.IdAlmacenNavigation).WithMany(p => p.EntradaProductos)
@@ -378,9 +368,7 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.Precio)
                 .HasColumnType("decimal(10, 2)")
                 .HasColumnName("precio");
-            entity.Property(e => e.StockActual)
-                .HasColumnType("decimal(10, 2)")
-                .HasColumnName("stock_actual");
+            entity.Property(e => e.StockActual).HasColumnName("stock_actual");
 
             entity.HasOne(d => d.IdAlmacenNavigation).WithMany(p => p.StockProductos)
                 .HasForeignKey(d => d.IdAlmacen)
@@ -438,7 +426,6 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.FechaRegistro)
                 .HasColumnType("datetime")
                 .HasColumnName("fecha_registro");
-            
             entity.Property(e => e.IdRol).HasColumnName("id_rol");
             entity.Property(e => e.Nombre)
                 .HasMaxLength(50)
@@ -468,7 +455,6 @@ public partial class ApplicationDbContext : DbContext
                 .HasColumnName("fecha_registro");
             entity.Property(e => e.IdTipoDocumentoVenta).HasColumnName("id_tipo_documento_venta");
             entity.Property(e => e.IdUsuario).HasColumnName("id_usuario");
-            
             entity.Property(e => e.NombreCliente)
                 .HasMaxLength(50)
                 .IsUnicode(false)

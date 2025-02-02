@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace WebApplicationVentas.Entidades;
 
-public class Venta
+public partial class Venta
 {
     public int Id { get; set; }
 
@@ -19,9 +19,9 @@ public class Venta
 
     public DateTime FechaRegistro { get; set; }
 
-    public List<DetalleVenta> DetalleVentas { get; set; }
+    public virtual ICollection<DetalleVenta> DetalleVenta { get; set; } = new List<DetalleVenta>();
 
-    public TipoDocumentoVentum IdTipoDocumentoVentaNavigation { get; set; }
+    public virtual TipoDocumentoVentum IdTipoDocumentoVentaNavigation { get; set; }
 
-    public Usuario IdUsuarioNavigation { get; set; }
+    public virtual Usuario IdUsuarioNavigation { get; set; }
 }

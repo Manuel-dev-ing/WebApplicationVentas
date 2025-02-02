@@ -1,0 +1,98 @@
+﻿@model EditarStockProductosViewModel
+@{
+    ViewData["Title"] = "Actualizar de Stock Producto";
+}
+<div class="pagetitle">
+    <h1>Stock Productos</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index" asp-controller="StockProcductos">Stock Prouctos</a></li>
+            <li class="breadcrumb-item active">Actualizar Stock Productos</li>
+        </ol>
+    </nav>
+</div>
+
+<form asp-action="Editar" asp-controller="StockProcductos">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    
+    <div class="card">
+        <div class="card-body">
+            <div class="row d-flex">
+                <div class="col-md-5">
+                    <label asp-for="Stock" class="form-label"></label>
+                    <input asp-for="Stock" type="number" id="stock" min="0" class="form-control" />
+
+                </div>
+                <div class="col-md-5">
+                    <label asp-for="Almacen" class="form-label">Almacenes</label>
+                    <input asp-for="Almacen" id="almacenes" class="form-control" readonly />
+                </div>
+            </div>
+
+        </div>
+    </div><!-- End Card with header and footer -->
+    <div class="row">
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-body">
+                    <img src="/Imagenes/@Model.Imagen" alt="imagen producto" />
+                </div>
+            </div><!-- End Card with header and footer -->
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title titulo-datosProductos">Datos del Producto</h5>
+                    <!-- Multi Columns Form -->
+
+                    <div class="row g-3">
+
+                        <input asp-for="IdAlmacen" type="hidden" id="idAlmacen"/>
+                        
+                        <input asp-for="IdProducto" type="hidden" id="idProducto"/>
+                        
+                        <div class="col-md-6">
+                            <label asp-for="Categoria" class="form-label">Categoria</label>
+                            <input asp-for="Categoria" type="text" id="categoria" readonly class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Marca" class="form-label">Marca</label>
+                            <input asp-for="Marca" type="text" id="marca" readonly class="form-control" />
+                        </div>
+
+                        <div class="col-md-12">
+                            <label asp-for="Descripcion" class="form-label">Descripcion</label>
+                            <input asp-for="Descripcion" id="descripcion" class="form-control" readonly>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Precio" class="form-label">Precio</label>
+                            <input asp-for="Precio" class="form-control" readonly>
+                        </div>
+
+                    </div>
+                    <div class="text-center mt-3">
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </div>
+            </div><!-- End Card with header and footer -->
+
+        </div>
+
+    </div>
+</form>
+
+
+
+
+
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/stockProductos.js"></script>
+
+}
+

@@ -49,12 +49,32 @@ namespace WebApplicationVentas.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Guardar(ProductosCreacionViewModel model)
+        public async Task<IActionResult> Crear(ProductosCreacionViewModel model)
         {
             if (!ModelState.IsValid) {
-
+                model.tiposMarcas = await obtenerTiposMarcas();
+                model.tiposCategorias = await obtenerTiposCategorias();
                 return View(model);
             }
+
+            //if (model.StockMinimo > model.StockMaximo)
+            //{
+            //    TempData["Mensaje"] = "El stock minimo no puede ser mayor que el stock maximo";
+            //    return View(model);
+
+            //}
+            //else if (model.StockMaximo < model.StockMinimo)
+            //{
+            //    TempData["Mensaje"] = "El stock maximo no puede ser menor que el stock minimo";
+            //    return RedirectToAction("Crear", "Productos");
+
+            //}
+            //else if(model.StockMaximo == model.StockMinimo)
+            //{
+            //    TempData["Mensaje"] = "La Cantidad de stocks no puede ser iguales";
+            //    return RedirectToAction("Crear", "Productos");
+            //}
+
 
             string nombreArchivo = subirImagen(model);
 

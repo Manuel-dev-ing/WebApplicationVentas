@@ -23,6 +23,10 @@ builder.Services.AddTransient<IRepositorioTiposDocumentosProvCliente, Repositori
 builder.Services.AddTransient<IRepositorioRol, RepositorioRol>();
 
 builder.Services.AddTransient<IRepositorioVentas, RepositorioVentas>();
+builder.Services.AddTransient<IRepositorioCompras, RepositorioCompras>();
+builder.Services.AddTransient<IRepositorioStockProductos, RepositorioStockProductos>();
+
+builder.Services.AddTransient<IRepositorioStockProductos, RepositorioStockProductos>();
 
 builder.Services.AddTransient<IRepositorioUsuarios, RepositorioUsuarios>();
 builder.Services.AddTransient<IUserStore<Usuario>, UsuarioStore>();
@@ -91,6 +95,6 @@ app.MapControllers();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Usuarios}/{action=Login}/{id?}");
+    pattern: "{controller=Almacenes}/{action=Index}/{id?}");
 
 app.Run();

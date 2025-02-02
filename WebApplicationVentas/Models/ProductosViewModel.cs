@@ -4,7 +4,7 @@ using System.Reflection.PortableExecutable;
 
 namespace WebApplicationVentas.Models
 {
-    public class ProductosViewModel
+    public class ProductosViewModel: IValidatableObject
     {
         public int Id { get; set; }
 
@@ -48,6 +48,31 @@ namespace WebApplicationVentas.Models
         public bool EsActivo { get; set; }
 
         public DateTime FechaRegistro { get; set; }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (StockMinimo > StockMaximo)
+            {
+                yield return new ValidationResult(
+               "El stock minimo no puede ser mayor que el stock maximo.",
+               new[] { nameof(StockMinimo) });
+            
+            }else if (StockMaximo < StockMinimo)
+            {
+                yield return new ValidationResult(
+                "El stock maximo no puede ser menor que el stock minimo.",
+                new[] { nameof(StockMaximo) });
+            
+            }else if (StockMaximo == StockMinimo)
+            {
+                yield return new ValidationResult(
+                "La Cantidad de stocks no puede ser iguales.",
+                new[] { nameof(StockMaximo) });
+            }    
+            
+
+        }
+
 
     }
 }
