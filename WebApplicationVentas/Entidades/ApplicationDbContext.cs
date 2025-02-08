@@ -139,6 +139,10 @@ public partial class ApplicationDbContext : DbContext
             entity.HasOne(d => d.IdEntradaProductoNavigation).WithMany(p => p.DetalleEntradaProductos)
                 .HasForeignKey(d => d.IdEntradaProducto)
                 .HasConstraintName("FK_detalle_entrada_productos_entrada_productos");
+
+            entity.HasOne(d => d.IdProductoNavigation).WithMany(p => p.DetalleEntradaProductos)
+                .HasForeignKey(d => d.IdProducto)
+                .HasConstraintName("FK_detalle_entrada_productos_productos");
         });
 
         modelBuilder.Entity<DetalleVenta>(entity =>
@@ -155,6 +159,10 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.Total)
                 .HasColumnType("decimal(10, 2)")
                 .HasColumnName("total");
+
+            entity.HasOne(d => d.IdProductoNavigation).WithMany(p => p.DetalleVenta)
+                .HasForeignKey(d => d.IdProducto)
+                .HasConstraintName("FK_detalle_ventas_productos");
 
             entity.HasOne(d => d.IdVentaNavigation).WithMany(p => p.DetalleVenta)
                 .HasForeignKey(d => d.IdVenta)

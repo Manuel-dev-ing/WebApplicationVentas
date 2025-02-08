@@ -15,7 +15,9 @@ public partial class DetalleEntradaProducto
 
     public decimal Precio { get; set; }
 
-    public decimal? Total { get; set; }
+    public decimal Total { get; set; }
 
     public virtual EntradaProducto IdEntradaProductoNavigation { get; set; }
+
+    public virtual Producto IdProductoNavigation { get; set; }
 }

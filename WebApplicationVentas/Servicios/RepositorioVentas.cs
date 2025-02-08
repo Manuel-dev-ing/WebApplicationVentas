@@ -11,6 +11,7 @@ namespace WebApplicationVentas.Servicios
         Task<List<documentosVentasDTO>> documentosVentas();
         Task<List<ClienteDTO>> listadoClientes();
         Task<List<ProductosDTO>> listadoProductos();
+        Task<List<VentaDetalleDTO>> obtenerDetalleVenta(int id);
         Task<List<VentasListadoDTO>> obtenerVentasPorFecha(string fechaInicio, string fechaFin);
     }
 
@@ -106,6 +107,26 @@ namespace WebApplicationVentas.Servicios
             return ventas;
         }
 
+        public async Task<List<VentaDetalleDTO>> obtenerDetalleVenta(int id)
+        {
+            var entidad = await context.DetalleVentas
+                .Include(x => x.IdProductoNavigation)
+                .Where(x => x.IdVenta == id)
+                .Select(x => new VentaDetalleDTO()
+                {
+                    Id = x.Id,
+                    Producto = x.IdProductoNavigation.Descripcion,
+                    Cantidad = x.Cantidad,
+                    Precio = x.Precio,
+                    Total = x.Total
+
+                }).ToListAsync();
+
+            return entidad;
+        }
+
+
+
     }
-    
+
 }

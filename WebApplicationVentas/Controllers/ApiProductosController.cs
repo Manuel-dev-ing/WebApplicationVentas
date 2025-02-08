@@ -1,4 +1,5 @@
 ﻿using Azure.Core;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Storage.Json;
 using System.Drawing;
@@ -102,7 +103,7 @@ namespace WebApplicationVentas.Controllers
             return productos;
         }
 
-        //obtener productos por fecha
+        //obtener ventas por fecha
         [HttpPost("obtenerVentasFecha")]
         public async Task<ActionResult> obtenerProductoFecha([FromBody] ConsultarVentaDTO consultarVentaDTO)
         {
@@ -112,6 +113,11 @@ namespace WebApplicationVentas.Controllers
             }
 
             var resultado = await unitOfWork.repositorioVentas.obtenerVentasPorFecha(consultarVentaDTO.fechaInicio, consultarVentaDTO.fechaFin);
+
+            if (resultado.Count() == 0)
+            {
+                return BadRequest(new { mensaje = "No se encontraron resultados" });
+            }
 
             return Ok(resultado);
 
@@ -192,6 +198,23 @@ namespace WebApplicationVentas.Controllers
             }
 
         }
+        
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<List<DetalleVentaDTO>>> Get(int id)
+        {
+
+            var productos = await unitOfWork.repositorioVentas.obtenerDetalleVenta(id);
+
+            if (productos is null)
+            {
+                return NotFound();
+            }
+
+
+            return Ok(productos);
+        }
+
+
 
         // ENTRADA DE PRODUCTOS
         [HttpGet("obtenerAlmacenes")]
@@ -284,6 +307,64 @@ namespace WebApplicationVentas.Controllers
 
 
         }
+
+        //obtener compras por fecha
+        [HttpPost("obtenerComprasFecha")]
+        public async Task<ActionResult> obtenerComprasFecha([FromBody] ConsultarComprasDTO consultarComprasDTO)
+        {
+            if (string.IsNullOrWhiteSpace(consultarComprasDTO.fechaFin) && string.IsNullOrWhiteSpace(consultarComprasDTO.fechaInicio))
+            {
+                return BadRequest("Las fechas no pueden estar vacías. Por favor, proporciona ambas fechas.");
+            }
+
+            var resultado = await unitOfWork.repositorioCompras.obtenerComprasPorFecha(consultarComprasDTO.fechaInicio, consultarComprasDTO.fechaFin);
+
+            if (resultado.Count() == 0)
+            {
+                return BadRequest(new { mensaje = "No se encontraron resultados" });
+            }
+
+            return Ok(resultado);
+
+        }
+        
+        
+        [HttpGet("detalleCompra/{id:int}")]
+        public async Task<ActionResult<List<DetalleVentaDTO>>> detalleCompra(int id)
+        {
+
+            var productos = await unitOfWork.repositorioCompras.listadoDetalleCompra(id);
+
+            if (productos is null)
+            {
+                return NotFound();
+            }
+
+
+            return Ok(productos);
+        }
+
+
+        //Obtiene los productos con el stock para la notificacion
+        [HttpGet("obtenerProductosStock")]
+        public async Task<ActionResult> obtenerProductosStock()
+        {
+            var resultado = await unitOfWork.repositorioProductos.ListadoProductosStock();
+
+            if (resultado is null)
+            {
+                return NotFound();
+            }
+
+            foreach (var item in resultado)
+            {
+                
+                item.ListadoProductos = await unitOfWork.repositorioProductos.ProductosListado(item.IdProducto); 
+            }
+
+            return Ok(resultado);
+        }
+
 
     }
 }

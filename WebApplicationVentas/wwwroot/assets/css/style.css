@@ -507,6 +507,7 @@ h6 {
   align-items: center;
   padding: 15px 10px;
   transition: 0.3s;
+  width: 20rem;
 }
 
 .header-nav .notifications .notification-item i {
