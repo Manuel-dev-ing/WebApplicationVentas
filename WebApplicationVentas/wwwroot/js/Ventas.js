@@ -33,7 +33,6 @@ function events() {
 function seleccionarTipoBusqueda(e) {
 
     if (e.target.classList.contains('radioCodigoBarras')) {
-        console.log("seleccionaste buscar por codigo de barras..")
         mostrarToast();
         buscarPorCodigoBarras()
 
@@ -42,7 +41,6 @@ function seleccionarTipoBusqueda(e) {
 
     if (e.target.classList.contains('radioNombreProducto')) {
         mostrarToast();
-        console.log("seleccionaste buscar por nombre producto..")
 
         buscarProductos();
         return;
@@ -163,11 +161,7 @@ function buscarProductos() {
         } else {
             query = "";
             mostrarListadoProductos(query);
-           
-
-           
         }
-
         
     })
 }
@@ -303,7 +297,7 @@ function insertarProducto(products) {
     
     guardarProductosLS(products)
     mostrarTotales();
-
+    mostrarProductos();
     document.querySelector('.search').value = ''
 }
 
@@ -485,7 +479,6 @@ function mostrarToast() {
     const toast = new bootstrap.Toast(toastLiveExample)
 
     toast.show()
-    console.log('Mostrando toast...')
     
 }
 
@@ -526,8 +519,8 @@ function calcularCambio(total) {
 async function realizarVenta() {
     console.log('click btn realizar Venta: ')
     const idDocVenta = document.querySelector('#tipo_documento_venta').value
-    const idCliente = document.querySelector('#Clientes')
-    const nombreCliente = idCliente.options[idCliente.selectedIndex].text
+    const idCliente = document.querySelector('#Clientes').value
+    //const nombreCliente = idCliente.options[idCliente.selectedIndex].text
     let subtotal = document.querySelector('#subtotal').textContent
     let total = document.querySelector('#total').textContent
     let products = []
@@ -538,7 +531,7 @@ async function realizarVenta() {
 
     let data = {
         idDocVenta: idDocVenta,
-        NombreCliente: nombreCliente,
+        idCliente: idCliente,
         SubTotal: subtotal,
         Total: total,
         productos: []
@@ -573,16 +566,29 @@ async function realizarVenta() {
         });
 
         console.log(respuesta)
-        
 
         if (respuesta.ok) {
             console.log("OK")
             ocultarModalRecepcionEfectivo()
 
             mostrarAlerta("Venta realizada exitosamente", "exito")
-            localStorage.clear();
-            limpiarTBody();
+            productosLS = [];
+            sincronizarLS()
+            console.log("productosLS: ", productosLS)
+            //limpiar local storage
             limpiarTotales();
+            mostrarProductos()
+
+            const resultado = await respuesta.json();
+            console.log(resultado)
+            if (resultado.documento === "factura") {
+                //crearFactura(resultado)
+                alertaFactura(resultado)
+            }
+
+            if (resultado.documento === "ticket") {
+                generarTicket(resultado)
+            }
 
         } else {
 
@@ -594,12 +600,95 @@ async function realizarVenta() {
 
         }
 
+    } catch (e) {
+        console.log(e)
+    }
+    
+}
+
+//async function crearFactura(resultado) {
+//    console.log("desde crear factura: ", resultado)
+
+//    try {
+
+//        const url = "/api/productos/factura"
+//        console.log("url factura: ", url)
+//        const respuesta = await fetch(url, {
+//            method: "POST",
+//            body: JSON.stringify(resultado.id_venta),
+//            headers: {
+//                "Content-Type": "application/json",
+//            }
+//        });
+
+//        console.log(respuesta)
+
+//        if (respuesta.ok) {
+
+//            alertaFactura()
+
+//        }
+
+
+//    } catch (e) {
+//        alert(e)
+//    }
+
+//}
+
+function generarTicket(resultado) {
+    const contenedorAlerta = document.querySelector('#alerta')
+
+
+    try {
+
+        console.log("generando ticket OK")
+        const a = document.createElement('a');
+        a.href = `/Productos/imprimirTicket/${resultado.id_venta}`;
+        a.textContent = "Ticket"
+        contenedorAlerta.appendChild(a)
+      
+        a.click()
+
+        contenedorAlerta.removeChild(a)
+        mostrarProductos()
         
 
     } catch (e) {
         console.log(e)
     }
-    
+}
+
+function alertaFactura(resultado) {
+    const contenedorAlerta = document.querySelector('#alerta')
+
+    const alertDiv = document.createElement("div");
+    alertDiv.classList.add("alert", "alert-success");
+    alertDiv.setAttribute("role", "alert");
+
+    const textNode = document.createTextNode("Factura generada ");
+    const link = document.createElement("a");
+    link.classList.add('alert-link')
+    link.href = `/Productos/ImprimirVenta/${resultado.id_venta}`
+    link.textContent = "Descargala Aqui";
+
+    link.onclick = function () {
+        ocultarAlertaPDF()
+    }
+
+    alertDiv.appendChild(textNode);
+    alertDiv.appendChild(link);
+
+    contenedorAlerta.appendChild(alertDiv)
+    mostrarProductos();
+  
+}
+
+function ocultarAlertaPDF() {
+    console.log("ocultando alerta pdf...")
+    const alertDiv = document.querySelector('.alert')
+    alertDiv.remove()
+    console.log("se ha ocultado la alerta...")
 }
 
 function limpiarTabla() {

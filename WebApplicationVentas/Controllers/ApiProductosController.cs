@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Storage.Json;
+using Rotativa.AspNetCore;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Security.Claims;
@@ -126,9 +127,12 @@ namespace WebApplicationVentas.Controllers
         [HttpPost("venta")]
         public async Task<IActionResult> venta([FromBody] VentaDTO ventaDTO)
         {
+
             try
             {
-                if (ventaDTO == null || ventaDTO.productos == null || string.IsNullOrWhiteSpace(ventaDTO.NombreCliente))
+                var tipo_documento = "";
+
+                if (ventaDTO == null || ventaDTO.productos == null || !ventaDTO.productos.Any())
                 {
                     return BadRequest("Datos invalidos");
                 }
@@ -150,18 +154,29 @@ namespace WebApplicationVentas.Controllers
                             return BadRequest(new { mensaje = $"No hay Stock para el producto {item.DescripcionProducto}" });
                         }
                     }
-
                  
                 }
                 //fin validar stock
 
                 var id_usuario = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
+                var id_doc_venta = Convert.ToUInt32(ventaDTO.idDocVenta);
+                if (id_doc_venta == 2)
+                {
+                    tipo_documento = "factura";
+                }
+                if (id_doc_venta == 1)
+                {
+                    tipo_documento = "ticket";
+                }
+
+
                 var venta = new Venta()
                 {
                     IdTipoDocumentoVenta = Convert.ToInt32(ventaDTO.idDocVenta),
-                    IdUsuario = id_usuario,
-                    NombreCliente = ventaDTO.NombreCliente,
+                    IdUsuario = id_usuario == 0 ? 1 : id_usuario,
+                    IdCliente = Convert.ToInt32(ventaDTO.idCliente),
+                    NumeroVenta = GenerarNumeroVenta(),
                     SubTotal = Convert.ToDecimal(ventaDTO.SubTotal),
                     Total = Convert.ToDecimal(ventaDTO.Total),
                     FechaRegistro = DateTime.Now,
@@ -186,9 +201,8 @@ namespace WebApplicationVentas.Controllers
 
                 }
 
-
                 await unitOfWork.Complete();
-                return Ok();
+                return Ok(new { id_venta = venta.Id, documento = tipo_documento });
 
             }
             catch (Exception ex)
@@ -198,7 +212,13 @@ namespace WebApplicationVentas.Controllers
             }
 
         }
-        
+
+        private int GenerarNumeroVenta()
+        {
+            Random random = new Random();
+            return random.Next(100000, 999999); // Número de 6 dígitos
+        }
+
         [HttpGet("{id:int}")]
         public async Task<ActionResult<List<DetalleVentaDTO>>> Get(int id)
         {
@@ -213,7 +233,6 @@ namespace WebApplicationVentas.Controllers
 
             return Ok(productos);
         }
-
 
 
         // ENTRADA DE PRODUCTOS
@@ -344,6 +363,29 @@ namespace WebApplicationVentas.Controllers
             return Ok(productos);
         }
 
+        //[HttpGet("ticket/{id:int}")]
+        //public async Task<IActionResult> ticket(int id)
+        //{
+
+        //    var producto = await unitOfWork.repositorioVentas.generarVentaFactura(id);
+
+        //    if (producto is null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    var pdf = new ViewAsPdf("ImprimirTicket", producto)
+        //    {
+        //        FileName = $"Ticket {producto.NumeroVenta}.pdf",
+        //        PageOrientation = Rotativa.AspNetCore.Options.Orientation.Portrait,
+        //        PageSize = Rotativa.AspNetCore.Options.Size.B7
+        //    };
+
+        //    //var pdfBytes = await pdf.BuildFile(ControllerContext);
+
+        //    return Ok();
+        //}
+
 
         //Obtiene los productos con el stock para la notificacion
         [HttpGet("obtenerProductosStock")]
@@ -365,6 +407,19 @@ namespace WebApplicationVentas.Controllers
             return Ok(resultado);
         }
 
+        //Obtener datos del Negocio
+        [HttpGet]
+        public async Task<ActionResult> obtenerDatosNegocio()
+        {
+            var modelo = await unitOfWork.repositorioNegocio.obtener();
+
+            if (modelo is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(modelo);
+        }
 
     }
 }

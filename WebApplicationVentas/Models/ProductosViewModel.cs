@@ -37,7 +37,6 @@ namespace WebApplicationVentas.Models
         public string ImagenProducto { get; set; }
 
         [Display(Name = "Imagen Producto")]
-        [Required(ErrorMessage = "La imagen del producto es requerido")]
         [NotMapped]
         public IFormFile ImagenArchivo { get; set; }
 

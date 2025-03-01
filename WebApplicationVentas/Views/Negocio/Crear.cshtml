@@ -1,0 +1,90 @@
+﻿@model NegocioCreacionViewModel
+
+@{
+    ViewData["Title"] = "Crear Negocio";
+}
+
+<div class="pagetitle">
+    <h1>Datos del Negocio</h1>
+
+</div><!-- End Page Title -->
+
+
+<section class="section profile">
+
+    <div class="row">
+        <form class="row" asp-action="Crear" asp-controller="Negocio" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+
+            <div class="col-xl-4">
+
+                <div class="card">
+                    <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+
+                        <img id="prevImg" class="rounded-circle">
+                        <div>
+                            <label class="form-label"></label>
+                            <input asp-for="logotipo" class="form-control" id="img" type="file" />
+                        </div>
+
+                    </div>
+                </div>
+
+
+            </div>
+
+            <div class="col-xl-8">
+
+                <div class="card">
+                    <div class="card-body pt-3">
+
+                        <!-- Multi Columns Form -->
+                        <div class="row g-3">
+
+                            <div class="col-md-6">
+                                <label asp-for="Nombre" class="form-label"></label>
+                                <input asp-for="Nombre" class="form-control">
+                                <span class="text-danger" asp-validation-for="Nombre"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Telefono" class="form-label"></label>
+                                <input asp-for="Telefono" class="form-control" type="tel">
+                                <span asp-validation-for="Telefono" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-12">
+                                <label asp-for="Correo" class="form-label"></label>
+                                <input asp-for="Correo" class="form-control" type="email">
+                                <span asp-validation-for="Correo" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Calle" class="form-label"></label>
+                                <input asp-for="Calle" class="form-control" type="text">
+                                <span asp-validation-for="Calle" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Colonia" class="form-label"></label>
+                                <input asp-for="Colonia" class="form-control" type="text">
+                                <span asp-validation-for="Colonia" class="text-danger"></span>
+                            </div>
+
+
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </form><!-- End Multi Columns Form -->
+    </div>
+</section>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/previsualizarImagen.js"></script>
+
+}
+
+

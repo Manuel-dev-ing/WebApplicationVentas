@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using Microsoft.Identity.Client;
 using WebApplicationVentas.Entidades;
 
 namespace WebApplicationVentas.Servicios
@@ -18,7 +19,7 @@ namespace WebApplicationVentas.Servicios
         IRepositorioVentas repositorioVentas { get; }
         IRepositorioCompras repositorioCompras { get; }
         IRepositorioStockProductos repositorioStockProductos { get; }
-
+        IRepositorioNegocio repositorioNegocio { get; }
         Task<int> Complete();
     }
 
@@ -43,6 +44,7 @@ namespace WebApplicationVentas.Servicios
         public IRepositorioCompras repositorioCompras { get; private set; }
 
         public IRepositorioStockProductos repositorioStockProductos { get; private set; }
+        public IRepositorioNegocio repositorioNegocio { get; set; }
 
         public UnitOfWork(ApplicationDbContext context)
         {
@@ -60,6 +62,8 @@ namespace WebApplicationVentas.Servicios
             repositorioVentas = new RepositorioVentas(context);
             repositorioCompras = new RepositorioCompras(context);
             repositorioStockProductos = new RepositorioStockProductos(context);
+            repositorioNegocio = new RepositorioNegocio(context);
+
         }
 
         public async Task<int> Complete()

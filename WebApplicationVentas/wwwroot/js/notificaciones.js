@@ -1,5 +1,4 @@
 ﻿(function () {
-    console.log("layout...")
     var cantidadNotificacion = 0;
     var ulNotificacion = document.querySelector('#ul-notificacion')
 
@@ -13,7 +12,6 @@
 
     //Obtiene los productos con su stock
     async function obtener() {
-        console.log("obteniendo....")
         try {
             const url = '/api/productos/obtenerProductosStock'
             const respuesta = await fetch(url, {
@@ -25,7 +23,6 @@
 
             if (respuesta.ok) {
                 const resultado = await respuesta.json()
-                console.log(resultado)
                 mostrar(resultado)
             }
 
@@ -107,7 +104,6 @@
 
 
         })
-        console.log("Cantidad total de notificaciones: ", cantidadNotificacion)
 
         mostrarCantidadNotificacion()
     }
@@ -116,7 +112,6 @@
         const badgeNumero = document.querySelector('#badge-numero')
 
         badgeNumero.textContent = cantidadNotificacion
-        console.log("mostrarCantidadNotificacion: ", cantidadNotificacion)
 
     }
 

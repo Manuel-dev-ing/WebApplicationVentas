@@ -150,18 +150,24 @@
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-
                         <li>
-                            <form asp-action="Logout" asp-controller="Usuarios">
+                            <a class="dropdown-item d-flex align-items-center" asp-action="Index" asp-controller="Negocio">
+                                <i class="bi bi-gear"></i>
+                                <span>Negocio</span>
+                            </a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
 
-                                <button class="dropdown-item d-flex align-items-center">
-                                    <i class="bi bi-box-arrow-right"></i>
-                                    <span>Cerrar sesion</span>
-                                </button>
-
-                            </form>
+                            <a class="dropdown-item d-flex align-items-center" asp-action="Logout" asp-controller="Usuarios">
+                                <i class="bi bi-box-arrow-right"></i>
+                                <span>Cerrar sesion</span>
+                            </a>
                             
                         </li>
+                     
 
                     </ul><!-- End Profile Dropdown Items -->
                 </li><!-- End Profile Nav -->

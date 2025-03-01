@@ -1,0 +1,112 @@
+﻿@model VentaFacturaViewModel
+
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket de Venta</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .ticket {
+            background:white;
+        }
+
+        .ticket h2, .ticket p {
+            text-align: center;
+        }
+
+        .items {
+            border-top: 2px dashed black;
+            border-bottom: 2px dashed black;
+            padding: 10px 0;
+            margin: 10px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 5px;
+        }
+
+        th {
+            border-bottom: 1px solid black;
+        }
+
+        .total {
+            font-weight: bold;
+        }
+
+        .subtotal {
+            font-weight: bold;
+        }
+
+        .contenedor-totales {
+            width: 100%;
+          
+        }
+    </style>
+</head>
+<body>
+    <div class="ticket">
+        <h2>Supermercado XYZ</h2>
+        <p>Fecha: @DateTime.Now.ToString("hh:mm:ss")</p>
+        <p>Hora: @DateTime.Now.ToString("M/d/yyyy")</p>
+        <div class="items">
+            <table>
+                <tr>
+                    <th>Producto</th>
+                    <th>Cant.</th>
+                    <th>Subtotal</th>
+                </tr>
+
+                @foreach (var item in Model.productos)
+                {
+                    <tr>
+                        <td>@item.DescripcionProducto</td>
+                        <td>@item.Cantidad</td>
+                        <td>@item.Precio</td>
+                    </tr>
+                }
+                
+            </table>
+        </div>
+        <div class="contenedor-totales">
+
+            <p class="psubtotal">SubTotal: $@Model.SubTotal</p>
+            <p class="ptotal">Total: $@Model.Total</p>
+            <div>
+            @* </div> *@
+            @* <div> *@
+            @*     <p class="subtotal"></p> *@
+            @*     <p class="total"></p> *@
+            @* </div> *@
+        </div>
+
+        <p>¡Gracias por su compra!</p>
+    </div>
+</body>
+</html>
+
+
+
+

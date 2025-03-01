@@ -18,8 +18,4 @@ public partial class Negocio
     public string Calle { get; set; }
 
     public string Colonia { get; set; }
-
-    public string CodigoPostalCiudad { get; set; }
-
-    public string Pais { get; set; }
 }

@@ -9,6 +9,7 @@ namespace WebApplicationVentas.Servicios
     {
         void crear(Venta venta);
         Task<List<documentosVentasDTO>> documentosVentas();
+        Task<VentaFacturaViewModel> generarVentaFactura(int id);
         Task<List<ClienteDTO>> listadoClientes();
         Task<List<ProductosDTO>> listadoProductos();
         Task<List<VentaDetalleDTO>> obtenerDetalleVenta(int id);
@@ -98,7 +99,7 @@ namespace WebApplicationVentas.Servicios
                 .Select(a => new VentasListadoDTO(){
                     Id = a.Id,
                     Usuario = a.IdUsuarioNavigation.Nombre + " " + a.IdUsuarioNavigation.Apellidos,
-                    Cliente = a.NombreCliente,
+                    Cliente = a.IdCliente.ToString(),
                     SubTotal = a.SubTotal,
                     Total = a.Total,
                     Fecha = a.FechaRegistro
@@ -125,7 +126,34 @@ namespace WebApplicationVentas.Servicios
             return entidad;
         }
 
+        public async Task<VentaFacturaViewModel> generarVentaFactura(int id)
+        {
 
+            var modelo = await context.Ventas
+                .Include(x => x.IdTipoDocumentoVentaNavigation)
+                .Include(x => x.IdClienteNavigation)
+                .Where(x => x.Id == id)
+                .Select(v => new VentaFacturaViewModel()
+                {
+                    NumeroVenta = v.NumeroVenta,
+                    DocumentoCliente = v.IdTipoDocumentoVentaNavigation.Descripcion,
+                    IdTipoDocumento = v.IdTipoDocumentoVenta,
+                    NombreCliente = v.IdClienteNavigation.Nombre + ' ' + v.IdClienteNavigation.Apellidos,
+                    SubTotal = v.SubTotal,
+                    Total = v.Total,
+                    productos = v.DetalleVenta.Select(d => new DetalleVentaFactura()
+                    {
+                        IdProducto = d.IdProducto,
+                        DescripcionProducto = d.IdProductoNavigation.Descripcion,
+                        Cantidad = d.Cantidad,
+                        Precio = d.Precio,
+                        Total = d.Total
+                    }).ToList()
+
+                }).FirstOrDefaultAsync();
+
+            return modelo;
+        }
 
     }
 

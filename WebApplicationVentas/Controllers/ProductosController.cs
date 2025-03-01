@@ -2,13 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using Rotativa.AspNetCore;
 using WebApplicationVentas.Entidades;
 using WebApplicationVentas.Models;
 using WebApplicationVentas.Servicios;
 
 namespace WebApplicationVentas.Controllers
 {
-    
     public class ProductosController : Controller
     {
         private readonly IUnitOfWork unitOfWork;
@@ -56,25 +56,6 @@ namespace WebApplicationVentas.Controllers
                 model.tiposCategorias = await obtenerTiposCategorias();
                 return View(model);
             }
-
-            //if (model.StockMinimo > model.StockMaximo)
-            //{
-            //    TempData["Mensaje"] = "El stock minimo no puede ser mayor que el stock maximo";
-            //    return View(model);
-
-            //}
-            //else if (model.StockMaximo < model.StockMinimo)
-            //{
-            //    TempData["Mensaje"] = "El stock maximo no puede ser menor que el stock minimo";
-            //    return RedirectToAction("Crear", "Productos");
-
-            //}
-            //else if(model.StockMaximo == model.StockMinimo)
-            //{
-            //    TempData["Mensaje"] = "La Cantidad de stocks no puede ser iguales";
-            //    return RedirectToAction("Crear", "Productos");
-            //}
-
 
             string nombreArchivo = subirImagen(model);
 
@@ -132,7 +113,7 @@ namespace WebApplicationVentas.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Actualizar(ProductosCreacionViewModel model)
+        public async Task<IActionResult> Editar(ProductosCreacionViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -209,6 +190,51 @@ namespace WebApplicationVentas.Controllers
             await unitOfWork.Complete();
 
             return RedirectToAction("Index", "Productos");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ImprimirVenta(int id)
+        {
+
+            var modelo = await unitOfWork.repositorioVentas.generarVentaFactura(id);
+            var negocioModel = await unitOfWork.repositorioNegocio.obtener();
+
+            modelo.logotipo = negocioModel.ImagenLogotipo;
+            modelo.Direccion = negocioModel.Calle + " " + negocioModel.Colonia;
+            modelo.Correo = negocioModel.Correo;
+
+            if (modelo is null)
+            {
+                return RedirectToAction("Index", "Productos");
+            }
+
+            return new ViewAsPdf("ImprimirVenta", modelo)
+            {
+                FileName = $"Venta {modelo.NumeroVenta}.pdf",
+                PageOrientation = Rotativa.AspNetCore.Options.Orientation.Portrait,
+                PageSize = Rotativa.AspNetCore.Options.Size.A4
+
+            };
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> imprimirTicket(int id)
+        {
+
+            var producto = await unitOfWork.repositorioVentas.generarVentaFactura(id);
+
+            if (producto is null)
+            {
+                return RedirectToAction("Index", "Productos");
+            }
+
+            return new ViewAsPdf("ImprimirTicket", producto)
+            {
+                FileName = $"Ticket-{producto.NumeroVenta}.pdf",
+                PageOrientation = Rotativa.AspNetCore.Options.Orientation.Portrait,
+                PageSize = Rotativa.AspNetCore.Options.Size.B7
+            };
+
         }
 
 

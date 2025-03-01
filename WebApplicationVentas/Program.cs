@@ -22,11 +22,13 @@ builder.Services.AddTransient<IRepositorioProveedores, RepositorioProveedores>()
 builder.Services.AddTransient<IRepositorioTiposDocumentosProvCliente, RepositorioTiposDocumentosProvCliente>();
 builder.Services.AddTransient<IRepositorioRol, RepositorioRol>();
 
+
 builder.Services.AddTransient<IRepositorioVentas, RepositorioVentas>();
 builder.Services.AddTransient<IRepositorioCompras, RepositorioCompras>();
 builder.Services.AddTransient<IRepositorioStockProductos, RepositorioStockProductos>();
 
 builder.Services.AddTransient<IRepositorioStockProductos, RepositorioStockProductos>();
+builder.Services.AddTransient<IRepositorioNegocio, RepositorioNegocio>();
 
 builder.Services.AddTransient<IRepositorioUsuarios, RepositorioUsuarios>();
 builder.Services.AddTransient<IUserStore<Usuario>, UsuarioStore>();
@@ -96,5 +98,8 @@ app.MapControllers();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Almacenes}/{action=Index}/{id?}");
+
+IWebHostEnvironment env = app.Environment;
+Rotativa.AspNetCore.RotativaConfiguration.Setup(env.WebRootPath, "../Rotativa/Windows");
 
 app.Run();

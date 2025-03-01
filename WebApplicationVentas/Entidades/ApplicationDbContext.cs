@@ -219,10 +219,6 @@ public partial class ApplicationDbContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("calle");
-            entity.Property(e => e.CodigoPostalCiudad)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("codigo_postal_ciudad");
             entity.Property(e => e.Colonia)
                 .HasMaxLength(50)
                 .IsUnicode(false)
@@ -232,17 +228,13 @@ public partial class ApplicationDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("correo");
             entity.Property(e => e.Logotipo)
-                .HasMaxLength(50)
+                .HasMaxLength(200)
                 .IsUnicode(false)
                 .HasColumnName("logotipo");
             entity.Property(e => e.Nombre)
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("nombre");
-            entity.Property(e => e.Pais)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("pais");
             entity.Property(e => e.Telefono)
                 .HasMaxLength(20)
                 .IsUnicode(false)
@@ -461,18 +453,20 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.FechaRegistro)
                 .HasColumnType("datetime")
                 .HasColumnName("fecha_registro");
+            entity.Property(e => e.IdCliente).HasColumnName("id_cliente");
             entity.Property(e => e.IdTipoDocumentoVenta).HasColumnName("id_tipo_documento_venta");
             entity.Property(e => e.IdUsuario).HasColumnName("id_usuario");
-            entity.Property(e => e.NombreCliente)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("nombre_cliente");
+            entity.Property(e => e.NumeroVenta).HasColumnName("numero_venta");
             entity.Property(e => e.SubTotal)
                 .HasColumnType("decimal(10, 2)")
                 .HasColumnName("sub_total");
             entity.Property(e => e.Total)
                 .HasColumnType("decimal(10, 2)")
                 .HasColumnName("total");
+
+            entity.HasOne(d => d.IdClienteNavigation).WithMany(p => p.Venta)
+                .HasForeignKey(d => d.IdCliente)
+                .HasConstraintName("FK_ventas_clientes");
 
             entity.HasOne(d => d.IdTipoDocumentoVentaNavigation).WithMany(p => p.Venta)
                 .HasForeignKey(d => d.IdTipoDocumentoVenta)
