@@ -15,16 +15,18 @@ namespace WebApplicationVentas.Controllers
             this.unitOfWork = unitOfWork;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(PaginacionViewModel paginacion)
         {
-            var proveedoreActivos = await unitOfWork.repositorioProveedores.proveedoresActivos();
-            var proveedoresInactivos = await unitOfWork.repositorioProveedores.proveedoresInactivos();
+            var proveedoreActivos = await unitOfWork.repositorioProveedores.proveedoresActivos(paginacion);
+            var totalProveedores = unitOfWork.repositorioProveedores.contarElementos();
 
-            var modelo = new ProveedoresModel()
+            var modelo = new PaginacionRespuesta<ProvedoresViewModel>()
             {
-                proveedoresActivos = proveedoreActivos,
-                proveedoresInactivos = proveedoresInactivos
-
+                ElementosActivos = proveedoreActivos,
+                Pagina = paginacion.Pagina,
+                RecordsPorPagina = paginacion.RecordsPorPagina,
+                CantidadTotalRecords = totalProveedores,
+                BaseURL = "/Proveedores"
             };
 
             return View(modelo);
@@ -174,10 +176,31 @@ namespace WebApplicationVentas.Controllers
 
         }
 
+        [HttpGet]
+        public async Task<IActionResult> ElementosInactivos(PaginacionViewModel paginacion)
+        {
+            var proveedoresInactivos = await unitOfWork.repositorioProveedores.proveedoresInactivos(paginacion);
+
+            var total = unitOfWork.repositorioProveedores.contarElementosInactivos();
+
+            var modelo = new PaginacionRespuesta<ProvedoresViewModel>()
+            {
+
+                ElementosInactivos = proveedoresInactivos,
+                Pagina = paginacion.Pagina,
+                RecordsPorPagina = paginacion.RecordsPorPagina,
+                CantidadTotalRecords = total,
+                BaseURL = "/Proveedores/ElementosInactivos"
+
+            };
+
+
+            return View(modelo);
+        }
 
         private async Task<IEnumerable<SelectListItem>> obtenerTiposDocumentos()
         {
-            var tiposDocumentos = await unitOfWork.repositorioTiposDocumentosProv.registrosActivos();
+            var tiposDocumentos = await unitOfWork.repositorioTiposDocumentosProv.ListadoregistrosActivos();
             var resultado = tiposDocumentos.Select(x => new SelectListItem(x.Descripcion, x.Id.ToString())).ToList();
 
             var opcionPorDefecto = new SelectListItem("-- Seleccione un Rubro --", "0", true);
@@ -187,7 +210,7 @@ namespace WebApplicationVentas.Controllers
         }
         private async Task<IEnumerable<SelectListItem>> obtenerTiposRubros()
         {
-            var tiposRubros = await unitOfWork.repositorioRubros.rubrosActvos();
+            var tiposRubros = await unitOfWork.repositorioRubros.listadoActvos();
             var resultado = tiposRubros.Select(x => new SelectListItem(x.Descripcion, x.Id.ToString())).ToList();
 
             var opcionPorDefecto = new SelectListItem("-- Seleccione un Rubro --", "0", true);

@@ -6,12 +6,15 @@ namespace WebApplicationVentas.Servicios
 {
     public interface IRepositorioMarcas
     {
+        int contarElementos();
+        int contarElementosInactivos();
         void editar(Marca marca);
         void eliminar(Marca marca);
         Task<bool> existeMarca(int id);
         void guardar(Marca marca);
-        Task<IEnumerable<MarcasViewModel>> marcasActivas();
-        Task<IEnumerable<MarcasViewModel>> marcasInactivas();
+        Task<IEnumerable<MarcasViewModel>> ListadomarcasActivas();
+        Task<IEnumerable<MarcasViewModel>> marcasActivas(PaginacionViewModel paginacion);
+        Task<IEnumerable<MarcasViewModel>> marcasInactivas(PaginacionViewModel paginacion);
         Task<Marca> obtenerPorId(int id);
     }
 
@@ -25,9 +28,42 @@ namespace WebApplicationVentas.Servicios
             this.context = context;
         }
 
-        public async Task<IEnumerable<MarcasViewModel>> marcasActivas()
+        public int contarElementos()
         {
-            var marca = await context.Marcas.Where(x => x.EsActivo == true).Select(a => new MarcasViewModel()
+            var resultado = context.Marcas.Where(x => x.EsActivo == true).Count();
+            return resultado;
+        }
+
+        public int contarElementosInactivos()
+        {
+            var resultado = context.Marcas.Where(x => x.EsActivo == false).Count();
+            return resultado;
+        }
+
+        public async Task<IEnumerable<MarcasViewModel>> ListadomarcasActivas()
+        {
+            var marca = await context.Marcas
+                .Where(x => x.EsActivo == true)
+                .Select(a => new MarcasViewModel()
+                {
+                    Id = a.Id,
+                    Descripcion = a.Descripcion,
+                    EsActivo = a.EsActivo,
+                    FechaCreacion = a.FechaRegistro
+                }).ToListAsync();
+
+            return marca;
+        }
+
+
+        public async Task<IEnumerable<MarcasViewModel>> marcasActivas(PaginacionViewModel paginacion)
+        {
+            var marca = await context.Marcas
+                .Where(x => x.EsActivo == true)
+                .OrderBy(x => x.Id)
+                .Skip(paginacion.RecordsASaltar)
+                .Take(paginacion.RecordsPorPagina)
+                .Select(a => new MarcasViewModel()
             {
                 Id = a.Id,
                 Descripcion = a.Descripcion,
@@ -37,15 +73,24 @@ namespace WebApplicationVentas.Servicios
 
             return marca;
         }
-        public async Task<IEnumerable<MarcasViewModel>> marcasInactivas()
+
+
+        public async Task<IEnumerable<MarcasViewModel>> marcasInactivas(PaginacionViewModel paginacion)
         {
-            var marca = await context.Marcas.Where(x => x.EsActivo == false).Select(a => new MarcasViewModel()
-            {
-                Id = a.Id,
-                Descripcion = a.Descripcion,
-                EsActivo = a.EsActivo,
-                FechaCreacion = a.FechaRegistro
-            }).ToListAsync();
+            var marca = await context.Marcas
+                .Where(x => x.EsActivo == false)
+                .OrderBy(x => x.Id)
+                .Skip(paginacion.RecordsASaltar)
+                .Take(paginacion.RecordsPorPagina)
+                .Select(a => new MarcasViewModel()
+                {
+
+                    Id = a.Id,
+                    Descripcion = a.Descripcion,
+                    EsActivo = a.EsActivo,
+                    FechaCreacion = a.FechaRegistro
+
+                }).ToListAsync();
 
             return marca;
         }

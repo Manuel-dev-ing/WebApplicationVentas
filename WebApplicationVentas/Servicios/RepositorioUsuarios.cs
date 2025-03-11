@@ -10,11 +10,13 @@ namespace WebApplicationVentas.Servicios
         void actualizar(Usuario usuario);
         Task<Usuario> buscarPorId(int id);
         Task<Usuario> buscarUsuarioPorCorreo(string correo);
+        int contarElementos();
+        int contarElementosInactivos();
         void crearUsuario(Usuario usuario);
         Task<bool> existeUsuario(int id);
         Task<Usuario> obtenerPorId(int id);
-        Task<IEnumerable<UsuariosViewModel>> usuariosActivos();
-        Task<IEnumerable<UsuariosViewModel>> usuariosInactivos();
+        Task<IEnumerable<UsuariosViewModel>> usuariosActivos(PaginacionViewModel paginacion);
+        Task<IEnumerable<UsuariosViewModel>> usuariosInactivos(PaginacionViewModel paginacion);
     }
 
 
@@ -27,9 +29,26 @@ namespace WebApplicationVentas.Servicios
             this.context = context;
         }
 
-        public async Task<IEnumerable<UsuariosViewModel>> usuariosActivos()
+        public int contarElementos()
         {
-            var entidad = await context.Usuarios.Where(x => x.EsActivo == true).Select(a => new UsuariosViewModel()
+            var resultado = context.Usuarios.Where(x => x.EsActivo == true).Count();
+            return resultado;
+        }
+
+        public int contarElementosInactivos()
+        {
+            var resultado = context.Usuarios.Where(x => x.EsActivo == false).Count();
+            return resultado;
+        }
+
+        public async Task<IEnumerable<UsuariosViewModel>> usuariosActivos(PaginacionViewModel paginacion)
+        {
+            var entidad = await context.Usuarios
+                .Where(x => x.EsActivo == true)
+                .OrderBy(x => x.Id)
+                .Skip(paginacion.RecordsASaltar)
+                .Take(paginacion.RecordsPorPagina)
+                .Select(a => new UsuariosViewModel()
             {
                 Id = a.Id,
                 NombreRol = a.IdRolNavigation.Descripcion,
@@ -44,9 +63,14 @@ namespace WebApplicationVentas.Servicios
         }
 
 
-        public async Task<IEnumerable<UsuariosViewModel>> usuariosInactivos()
+        public async Task<IEnumerable<UsuariosViewModel>> usuariosInactivos(PaginacionViewModel paginacion)
         {
-            var entidad = await context.Usuarios.Where(x => x.EsActivo == false).Select(a => new UsuariosViewModel()
+            var entidad = await context.Usuarios
+                .Where(x => x.EsActivo == false)
+                .OrderBy(x => x.Id)
+                .Skip(paginacion.RecordsASaltar)
+                .Take(paginacion.RecordsPorPagina)
+                .Select(a => new UsuariosViewModel()
             {
                 Id = a.Id,
                 NombreRol = a.IdRolNavigation.Descripcion,

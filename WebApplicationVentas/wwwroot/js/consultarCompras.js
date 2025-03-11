@@ -149,7 +149,7 @@
 
             </div>
 
-            <table class="table table-bordered table-hover table-responsive mb-5 table-sm">
+            <table class="table table-hover table-responsive mb-5 table-sm">
                 <thead class="cabecera-tabla">
                     <tr>
                         <th></th>

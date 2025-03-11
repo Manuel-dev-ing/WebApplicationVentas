@@ -20,23 +20,44 @@ namespace WebApplicationVentas.Controllers
             this.userManager = userManager;
             this.signInManager = signInManager;
         }
+
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(PaginacionViewModel paginacion)
         {
 
-            var usuariosActivos = await unitOfWork.repositorioUsuarios.usuariosActivos();
-            var usuariosInactivos = await unitOfWork.repositorioUsuarios.usuariosInactivos();
+            var usuariosActivos = await unitOfWork.repositorioUsuarios.usuariosActivos(paginacion);
+            var total = unitOfWork.repositorioUsuarios.contarElementos();
 
-
-            var modelo = new UsuariosModel()
+            var modelo = new PaginacionRespuesta<UsuariosViewModel>()
             {
-                usuariosActivos = usuariosActivos,
-                usuariosInactivos = usuariosInactivos
-
+                ElementosActivos = usuariosActivos,
+                Pagina = paginacion.Pagina,
+                RecordsPorPagina = paginacion.RecordsPorPagina,
+                CantidadTotalRecords = total,
+                BaseURL = "/Usuarios"
             };
 
             return View(modelo);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> ElementosInactivos(PaginacionViewModel paginacion)
+        {
+            var usuariosInactivos = await unitOfWork.repositorioUsuarios.usuariosInactivos(paginacion);
+            var total = unitOfWork.repositorioUsuarios.contarElementos();
+
+            var modelo = new PaginacionRespuesta<UsuariosViewModel>()
+            {
+                ElementosInactivos = usuariosInactivos,
+                Pagina = paginacion.Pagina,
+                RecordsPorPagina = paginacion.RecordsPorPagina,
+                CantidadTotalRecords = total,
+                BaseURL = "/Usuarios/ElementosInactivos"
+            };
+
+            return View(modelo);
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> Crear()
@@ -224,7 +245,7 @@ namespace WebApplicationVentas.Controllers
 
         private async Task<IEnumerable<SelectListItem>> obtenerTiposRol()
         {
-            var tiposRol = await unitOfWork.repositorioRol.rolActivo();
+            var tiposRol = await unitOfWork.repositorioRol.Listadorol();
             var resultado = tiposRol.Select(x => new SelectListItem(x.Descripcion, x.Id.ToString())).ToList();
 
             var opcionPorDefecto = new SelectListItem("-- Seleccione un Usuario --", "0", true);

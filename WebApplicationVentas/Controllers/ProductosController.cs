@@ -22,15 +22,18 @@ namespace WebApplicationVentas.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(PaginacionViewModel paginacion)
         {
-            var registrosActivos = await unitOfWork.repositorioProductos.productosActivos();
-            var registrosInactivos = await unitOfWork.repositorioProductos.productosInactivos();
+            var registrosActivos = await unitOfWork.repositorioProductos.productosActivos(paginacion);
+            var totalProductos = unitOfWork.repositorioProductos.contarElementos();
 
-            var modelo = new ProductosModel()
+            var modelo = new PaginacionRespuesta<ProductosListadoViewModel>()
             {
-                ProductosActivos = registrosActivos,
-                ProductosInactivos = registrosInactivos
+                ElementosActivos = registrosActivos,
+                Pagina = paginacion.Pagina,
+                RecordsPorPagina = paginacion.RecordsPorPagina,
+                CantidadTotalRecords = totalProductos,
+                BaseURL = "/Productos"
             };
 
             return View(modelo);
@@ -117,6 +120,8 @@ namespace WebApplicationVentas.Controllers
         {
             if (!ModelState.IsValid)
             {
+                model.tiposCategorias = await obtenerTiposCategorias();
+                model.tiposMarcas = await obtenerTiposMarcas();
                 return View(model);    
             }
 
@@ -180,17 +185,40 @@ namespace WebApplicationVentas.Controllers
             
             if (!exiteModelo)
             {
+                var producto = await unitOfWork.repositorioProductos.obtenerProductoPorId(id);
+                producto.EsActivo = true;
+
+                unitOfWork.repositorioProductos.Actualizar(producto);
+                await unitOfWork.Complete();
                 return RedirectToAction("Index", "Productos");
             }
 
-            var producto = await unitOfWork.repositorioProductos.obtenerProductoPorId(id);
-            producto.EsActivo = true;
-
-            unitOfWork.repositorioProductos.Actualizar(producto);
-            await unitOfWork.Complete();
+         
 
             return RedirectToAction("Index", "Productos");
         }
+
+        [HttpGet]
+        public async Task<IActionResult> ElementosInactivos(PaginacionViewModel paginacion)
+        {
+            var productosInactivas = await unitOfWork.repositorioProductos.productosInactivos(paginacion);
+
+            var total = unitOfWork.repositorioProductos.contarElementosInactivos();
+
+            var almacenes = new PaginacionRespuesta<ProductosListadoViewModel>()
+            {
+                ElementosInactivos = productosInactivas,
+                Pagina = paginacion.Pagina,
+                RecordsPorPagina = paginacion.RecordsPorPagina,
+                CantidadTotalRecords = total,
+                BaseURL = "/Productos/ElementosInactivos"
+
+            };
+
+
+            return View(almacenes);
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> ImprimirVenta(int id)
@@ -222,7 +250,9 @@ namespace WebApplicationVentas.Controllers
         {
 
             var producto = await unitOfWork.repositorioVentas.generarVentaFactura(id);
-
+            var negocioModel = await unitOfWork.repositorioNegocio.obtener();
+            producto.NombreNegocio = negocioModel.Nombre;
+          
             if (producto is null)
             {
                 return RedirectToAction("Index", "Productos");
@@ -240,7 +270,7 @@ namespace WebApplicationVentas.Controllers
 
         private async Task<IEnumerable<SelectListItem>> obtenerTiposMarcas()
         {
-            var tiposMarcas = await unitOfWork.repositorioMarcas.marcasActivas();
+            var tiposMarcas = await unitOfWork.repositorioMarcas.ListadomarcasActivas();
             var resultado = tiposMarcas.Select(x => new SelectListItem(x.Descripcion, x.Id.ToString())).ToList();
 
             var opcionPorDefecto = new SelectListItem("-- Seleccione una Marca --", "0", true);
@@ -251,7 +281,7 @@ namespace WebApplicationVentas.Controllers
 
         private async Task<IEnumerable<SelectListItem>> obtenerTiposCategorias()
         {
-            var tiposCategorias = await unitOfWork.repositorioCategorias.obtenerCategoriasActivas();
+            var tiposCategorias = await unitOfWork.repositorioCategorias.CategoriasActivas();
             var resultado = tiposCategorias.Select(x => new SelectListItem(x.Nombre, x.Id.ToString())).ToList();
 
             var opcionPorDefecto = new SelectListItem("-- Seleccione una Categoria --", "0", true);

@@ -8,13 +8,15 @@ namespace WebApplicationVentas.Servicios
     public interface IRepositorioProductos
     {
         void Actualizar(Producto producto);
+        int contarElementos();
+        int contarElementosInactivos();
         void Eliminar(Producto producto);
         Task<bool> existeProducto(int id);
         void Guardar(Producto producto);
         Task<List<ListadoProductosStockDTO>> ListadoProductosStock();
         Task<Producto> obtenerProductoPorId(int id);
-        Task<IEnumerable<ProductosListadoViewModel>> productosActivos();
-        Task<IEnumerable<ProductosListadoViewModel>> productosInactivos();
+        Task<IEnumerable<ProductosListadoViewModel>> productosActivos(PaginacionViewModel paginacion);
+        Task<IEnumerable<ProductosListadoViewModel>> productosInactivos(PaginacionViewModel paginacion);
         Task<List<ProductosListadoDTO>> ProductosListado(int id);
     }
 
@@ -28,31 +30,52 @@ namespace WebApplicationVentas.Servicios
             this.context = context;
         }
 
-        public async Task<IEnumerable<ProductosListadoViewModel>> productosActivos()
+        public int contarElementos()
+        {
+            var resultado = context.Productos.Where(x => x.EsActivo == true).Count();
+            return resultado;
+        }
+
+        public int contarElementosInactivos()
+        {
+            var resultado = context.Productos.Where(x => x.EsActivo == false).Count();
+            return resultado;
+        }
+
+        public async Task<IEnumerable<ProductosListadoViewModel>> productosActivos(PaginacionViewModel paginacion)
         {
             var producto = await context.Productos
                 .Include(x => x.IdMarcaNavigation)
                 .Include(x => x.IdCategoriaNavigation)
-                .Where(x => x.EsActivo == true).Select(a => new ProductosListadoViewModel()
-            {
-                Id = a.Id,
-                Marca = a.IdMarcaNavigation.Descripcion,
-                Categoria = a.IdCategoriaNavigation.Descripcion,
-                Descripcion = a.Descripcion,
-                Precio = a.Precio,
-                Fecha = a.FechaRegistro
-            }).ToListAsync();
+                .Where(x => x.EsActivo == true)
+                .OrderBy(x => x.Id)
+                .Skip(paginacion.RecordsASaltar)
+                .Take(paginacion.RecordsPorPagina)
+                .Select(a => new ProductosListadoViewModel()
+                {
+                    Id = a.Id,
+                    Marca = a.IdMarcaNavigation.Descripcion,
+                    Categoria = a.IdCategoriaNavigation.Descripcion,
+                    Descripcion = a.Descripcion,
+                    Precio = a.Precio,
+                    Fecha = a.FechaRegistro
+
+                }).ToListAsync();
 
 
             return producto;
         }
 
-        public async Task<IEnumerable<ProductosListadoViewModel>> productosInactivos()
+        public async Task<IEnumerable<ProductosListadoViewModel>> productosInactivos(PaginacionViewModel paginacion)
         {
             var producto = await context.Productos
                .Include(x => x.IdMarcaNavigation)
                .Include(x => x.IdCategoriaNavigation)
-               .Where(x => x.EsActivo == false).Select(a => new ProductosListadoViewModel()
+               .Where(x => x.EsActivo == false)
+               .OrderBy(x => x.Id)
+               .Skip(paginacion.RecordsASaltar)
+               .Take(paginacion.RecordsPorPagina)
+               .Select(a => new ProductosListadoViewModel()
                {
                    Id = a.Id,
                    Marca = a.IdMarcaNavigation.Descripcion,
@@ -60,6 +83,7 @@ namespace WebApplicationVentas.Servicios
                    Descripcion = a.Descripcion,
                    Precio = a.Precio,
                    Fecha = a.FechaRegistro
+
                }).ToListAsync();
 
 
@@ -87,7 +111,7 @@ namespace WebApplicationVentas.Servicios
 
         public async Task<bool> existeProducto(int id)
         {
-            var producto = await context.Productos.AnyAsync(x => x.Id == id);
+            var producto = await context.Productos.AnyAsync(x => x.Id == id && x.EsActivo == true);
             return producto;
         }
 

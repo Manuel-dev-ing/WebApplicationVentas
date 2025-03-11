@@ -7,13 +7,14 @@ namespace WebApplicationVentas.Servicios
     public interface IRepositorioStockProductos
     {
         void actualizar(StockProducto stockProducto);
+        int contarElementos();
         Task<EditarStockProductosViewModel> edicionStockProductos(int id);
         void eliminar(StockProducto stockProducto);
         Task guardar(StockProducto stockProducto);
         Task<StockProducto> obtenerProductoAlmacen(int idProducto, int idAlmacen);
         Task<StockProducto> obtenerStockPorId(int id);
         Task<StockProducto> obtenerStockProductoPorId(int idProducto);
-        Task<IEnumerable<StockProductosViewModel>> obtenerStockProductos();
+        Task<IEnumerable<StockProductosViewModel>> obtenerStockProductos(PaginacionViewModel paginacion);
     }
 
 
@@ -24,6 +25,12 @@ namespace WebApplicationVentas.Servicios
         public RepositorioStockProductos(ApplicationDbContext context)
         {
             this.context = context;
+        }
+
+        public int contarElementos()
+        {
+            var resultado = context.StockProductos.Count();
+            return resultado;
         }
 
         public async Task<EditarStockProductosViewModel> edicionStockProductos(int id)
@@ -53,11 +60,14 @@ namespace WebApplicationVentas.Servicios
             return entidad;
         }
 
-        public async Task<IEnumerable<StockProductosViewModel>> obtenerStockProductos()
+        public async Task<IEnumerable<StockProductosViewModel>> obtenerStockProductos(PaginacionViewModel paginacion)
         {
             var entidad = await context.StockProductos
                 .Include(a => a.IdProductoNavigation)
                 .Include(a => a.IdAlmacenNavigation)
+                .OrderBy(x => x.Id)
+                .Skip(paginacion.RecordsASaltar)
+                .Take(paginacion.RecordsPorPagina)
                 .Select(x => new StockProductosViewModel()
                 {
                     Id = x.Id,
@@ -84,6 +94,7 @@ namespace WebApplicationVentas.Servicios
             return entidad;
         }
 
+        //obtiene el stock del producto por el id del producto
         public async Task<StockProducto> obtenerStockProductoPorId(int idProducto)
         {
             var entidad = await context.Set<StockProducto>().FirstOrDefaultAsync(x => x.IdProducto == idProducto);

@@ -16,19 +16,46 @@ namespace WebApplicationVentas.Controllers
             this.unitOfWork = unitOfWork;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(PaginacionViewModel paginacion)
         {
-            var categoriasActivas = await unitOfWork.repositorioCategorias.obtenerCategoriasActivas();
-            var categoriasInactivas = await unitOfWork.repositorioCategorias.obtenerCategoriasInactivas();
+            var categoriasActivas = await unitOfWork.repositorioCategorias.obtenerCategoriasActivas(paginacion);
+            var totalCategorias = unitOfWork.repositorioCategorias.contarElementos();
 
-            var categorias = new CategoriasViewModel()
+            var categorias = new PaginacionRespuesta<CategoriaViewModel>()
             {
-                CategoriasActivas = categoriasActivas,
-                CategoriasInactivas = categoriasInactivas
+                ElementosActivos = categoriasActivas,
+                Pagina = paginacion.Pagina,
+                RecordsPorPagina = paginacion.RecordsPorPagina,
+                CantidadTotalRecords = totalCategorias,
+                BaseURL = "/Categorias"
+
             };
 
             return View(categorias);
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> ElementosInactivos(PaginacionViewModel paginacion)
+        {
+            var categoriasInactivas = await unitOfWork.repositorioCategorias.obtenerCategoriasInactivas(paginacion);
+
+            var totalAlmacenes = unitOfWork.repositorioCategorias.contarElementosInactivos();
+
+            var almacenes = new PaginacionRespuesta<CategoriaViewModel>()
+            {
+                ElementosInactivos = categoriasInactivas,
+                Pagina = paginacion.Pagina,
+                RecordsPorPagina = paginacion.RecordsPorPagina,
+                CantidadTotalRecords = totalAlmacenes,
+                BaseURL = "/Categorias/ElementosInactivos"
+
+            };
+
+
+            return View(almacenes);
+        }
+
 
         [HttpGet]
         public IActionResult Crear()
@@ -130,8 +157,23 @@ namespace WebApplicationVentas.Controllers
             return RedirectToAction("Index", "Categorias");
         }
 
+        public async Task<IActionResult> Restaurar(int id)
+        {
 
-       
+            var modelo = await unitOfWork.repositorioCategorias.obtenerCategoriaPorId(id);
+
+            if (modelo is null)
+            {
+                return RedirectToAction("Index", "Categorias");
+            }
+
+
+            modelo.EsActivo = true;
+            unitOfWork.repositorioCategorias.editarCategoria(modelo);
+            await unitOfWork.Complete();
+            return RedirectToAction("Index", "Categorias");
+        }
+
 
 
     }

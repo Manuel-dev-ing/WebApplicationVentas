@@ -2,8 +2,6 @@
     var cantidadNotificacion = 0;
     var ulNotificacion = document.querySelector('#ul-notificacion')
 
-    console.log(ulNotificacion)
-
     document.addEventListener('DOMContentLoaded', () => {
 
         obtener()
@@ -62,7 +60,6 @@
             //crear el li 
             var li = document.createElement('li')
             li.classList.add('notification-item')
-
 
             let producto = elemento.listadoProductos[0]
 

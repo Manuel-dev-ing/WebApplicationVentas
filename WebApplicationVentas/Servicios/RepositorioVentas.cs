@@ -95,11 +95,12 @@ namespace WebApplicationVentas.Servicios
 
             var ventas = await context.Ventas
                 .Include(x => x.IdUsuarioNavigation)
+                .Include(x => x.IdClienteNavigation)
                 .Where(v => v.FechaRegistro >= dateStart && v.FechaRegistro <= dateEnd)
                 .Select(a => new VentasListadoDTO(){
                     Id = a.Id,
                     Usuario = a.IdUsuarioNavigation.Nombre + " " + a.IdUsuarioNavigation.Apellidos,
-                    Cliente = a.IdCliente.ToString(),
+                    Cliente = a.IdClienteNavigation.Nombre + " "+ a.IdClienteNavigation.Apellidos,
                     SubTotal = a.SubTotal,
                     Total = a.Total,
                     Fecha = a.FechaRegistro

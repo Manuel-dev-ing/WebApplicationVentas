@@ -9,11 +9,13 @@ namespace WebApplicationVentas.Servicios
     public interface IRepositorioAlmacenes
     {
         void actualizar(Almacene almacene);
+        int contarElementos();
+        int contarElementosInactivos();
         void crear(Almacene almacen);
         void eliminar(Almacene almacene);
-        Task<IEnumerable<AlmacenViewModel>> obteneAlmacenesInactivos();
+        Task<IEnumerable<AlmacenViewModel>> obteneAlmacenesInactivos(PaginacionViewModel paginacion);
         Task<IEnumerable<AlmacenViewModel>> obtenerAlmacenes();
-        Task<IEnumerable<AlmacenViewModel>> obtenerAlmacenesActivos();
+        Task<IEnumerable<AlmacenViewModel>> obtenerAlmacenesActivos(PaginacionViewModel paginacion);
         Task<Almacene> obtenerAlmacenPorId(int id);
     }
 
@@ -27,31 +29,53 @@ namespace WebApplicationVentas.Servicios
             this.context = context;
         }
 
-        public async Task<IEnumerable<AlmacenViewModel>> obtenerAlmacenesActivos()
+        public int contarElementos()
         {
-            var resultado = await context.Almacenes.Where(x => x.EsActivo == true).Select(a => new AlmacenViewModel
-            {
-                Id = a.Id,
-                Nombre = a.Descripcion,
-                FechaRegistro = a.FechaRegistro
+            var resultado = context.Almacenes.Where(x => x.EsActivo == true).Count();
+            return resultado;
+        }
 
-            }).ToListAsync();
+        public int contarElementosInactivos()
+        {
+            var resultado = context.Almacenes.Where(x => x.EsActivo == false).Count();
+            return resultado;
+        }
+
+        public async Task<IEnumerable<AlmacenViewModel>> obtenerAlmacenesActivos(PaginacionViewModel paginacion)
+        {
+            var resultado = await context.Almacenes
+                .Where(x => x.EsActivo == true)
+                .OrderBy(x => x.Id)
+                .Skip(paginacion.RecordsASaltar)
+                .Take(paginacion.RecordsPorPagina)
+                .Select(a => new AlmacenViewModel(){
+
+                    Id = a.Id,
+                    Nombre = a.Descripcion,
+                    FechaRegistro = a.FechaRegistro
+
+                }).ToListAsync();
             
             
 
             return resultado;
         }
 
-        public async Task<IEnumerable<AlmacenViewModel>> obteneAlmacenesInactivos()
+        public async Task<IEnumerable<AlmacenViewModel>> obteneAlmacenesInactivos(PaginacionViewModel paginacion)
         {
-            var resultado = await context.Almacenes.Where(x => x.EsActivo == false).Select(a => new AlmacenViewModel
-            {
-                Id = a.Id,
-                Nombre = a.Descripcion,
-                Esactivo = a.EsActivo,
-                FechaRegistro = a.FechaRegistro
+            var resultado = await context.Almacenes
+                .Where(x => x.EsActivo == false)
+                .OrderBy(x => x.Id)
+                .Skip(paginacion.RecordsASaltar)
+                .Take(paginacion.RecordsPorPagina)
+                .Select(a => new AlmacenViewModel
+                {
+                    Id = a.Id,
+                    Nombre = a.Descripcion,
+                    Esactivo = a.EsActivo,
+                    FechaRegistro = a.FechaRegistro
 
-            }).ToListAsync();
+                }).ToListAsync();
 
             return resultado;
         }

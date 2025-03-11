@@ -1,4 +1,4 @@
-﻿@model ProveedoresModel
+﻿@model PaginacionRespuesta<ProvedoresViewModel>
 
 @{
 
@@ -11,16 +11,27 @@
 
 </div><!-- End Page Title -->
 
-<!-- Modal -->
-<partial name="_ModalRegistrosInactivosProveedores" model="Model.proveedoresInactivos" />
-<!-- Fin Modal -->
 
 <a class="btn btn-outline-primary btn-sm mb-4" asp-action="Crear" asp-controller="Proveedores" title="Crear nuevo proveedor">Nuevo Proveedor</a>
 
 <div class="d-flex mb-1">
 
+    <div class="p-2" style="margin-top:7px">
+        <label class="form-label">Mostrar</label>
+    </div>
+
+
+    <div class="p-2">
+        <select asp-for="@Model.RecordsPorPagina" id="cantidadRecordsPorPagina" class="form-select">
+            <option>3</option>
+            <option>5</option>
+            <option>10</option>
+            <option>25</option>
+        </select>
+    </div>
+
     <div class="ms-auto p-2">
-        <input type="search" class="form-control" placeholder="buscar..." id="buscar" />
+        <input type="search" class="form-control" placeholder="buscar..." id="inputBuscar" />
     </div>
 
 </div>
@@ -29,13 +40,13 @@
 <div class="d-flex mb-1">
 
     <div class="ms-auto p-2">
-        <a class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">Ver Registros Inactivos</a>
+        <a class="btn btn-sm btn-outline-danger" asp-action="ElementosInactivos" asp-controller="Proveedores">Ver Registros Inactivos</a>
 
     </div>
 
 </div>
 
-<table class="table table-bordered table-hover table-responsive mb-5 table-sm">
+<table class="table table-hover table-responsive mb-5 table-sm">
     <thead class="cabecera-tabla">
         <tr>
             <th></th>
@@ -47,7 +58,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model.proveedoresActivos)
+        @foreach (var item in Model.ElementosActivos)
         {
             <tr>
                 <td>@item.Id</td>
@@ -64,6 +75,23 @@
         }
     </tbody>
 </table>
+
+<div class="d-flex justify-content-end">
+    <partial name="_Paginacion" />
+
+</div>
+
+@section Scripts {
+    <script src="~/js/buscar.js"></script>
+
+    <script>
+        $("#cantidadRecordsPorPagina").change(function () {
+            const recordsPorPagina = $(this).val();
+            location.href = `/Proveedores/?Pagina=1&RecordsPorPagina=${recordsPorPagina}`;
+        });
+    </script>
+
+}
 
 
 

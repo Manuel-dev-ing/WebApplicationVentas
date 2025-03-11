@@ -7,8 +7,10 @@ namespace WebApplicationVentas.Servicios
     public interface IRepositorioClientes
     {
         void Actualizar(Cliente cliente);
-        Task<IEnumerable<ClienteViewModel>> clientesActivos();
-        Task<IEnumerable<ClienteViewModel>> clientesInactivos();
+        Task<IEnumerable<ClienteViewModel>> clientesActivos(PaginacionViewModel paginacion);
+        Task<IEnumerable<ClienteViewModel>> clientesInactivos(PaginacionViewModel paginacion);
+        int contarElementos();
+        int contarElementosInactivos();
         void Eliminar(Cliente cliente);
         Task<bool> existeCliente(int id);
         void guardar(Cliente cliente);
@@ -24,10 +26,26 @@ namespace WebApplicationVentas.Servicios
             this.context = context;
         }
 
-        public async Task<IEnumerable<ClienteViewModel>> clientesActivos()
+        public int contarElementos()
+        {
+            var resultado = context.Clientes.Where(x => x.EsActivo == true).Count();
+            return resultado;
+        }
+        public int contarElementosInactivos()
+        {
+            var resultado = context.Clientes.Where(x => x.EsActivo == false).Count();
+            return resultado;
+        }
+
+        public async Task<IEnumerable<ClienteViewModel>> clientesActivos(PaginacionViewModel paginacion)
         {
 
-            var clientes = await context.Clientes.Where(x => x.EsActivo == true).Select(a => new ClienteViewModel
+            var clientes = await context.Clientes
+                .Where(x => x.EsActivo == true)
+                .OrderBy(x => x.Id)
+                .Skip(paginacion.RecordsASaltar)
+                .Take(paginacion.RecordsPorPagina)
+                .Select(a => new ClienteViewModel
             {
                 Id = a.Id,
                 Nombre = a.Nombre,
@@ -45,10 +63,15 @@ namespace WebApplicationVentas.Servicios
             return clientes;
         }
 
-        public async Task<IEnumerable<ClienteViewModel>> clientesInactivos()
+        public async Task<IEnumerable<ClienteViewModel>> clientesInactivos(PaginacionViewModel paginacion)
         {
 
-            var clientes = await context.Clientes.Where(x => x.EsActivo == false).Select(a => new ClienteViewModel
+            var clientes = await context.Clientes
+                .Where(x => x.EsActivo == false)
+                .OrderBy(x => x.Id)
+                .Skip(paginacion.RecordsASaltar)
+                .Take(paginacion.RecordsPorPagina)
+                .Select(a => new ClienteViewModel
             {
                 Id = a.Id,
                 Nombre = a.Nombre,

@@ -15,15 +15,18 @@ namespace WebApplicationVentas.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(PaginacionViewModel paginacion)
         {
-            var marcasActivas = await unitOfWork.repositorioMarcas.marcasActivas();
-            var marcasInactivas = await unitOfWork.repositorioMarcas.marcasInactivas();
+            var marcasActivas = await unitOfWork.repositorioMarcas.marcasActivas(paginacion);
+            var totalMarcas = unitOfWork.repositorioMarcas.contarElementos();
 
-            var modelo = new MarcasModel()
+            var modelo = new PaginacionRespuesta<MarcasViewModel>()
             {
-                marcasActivas = marcasActivas,
-                marcasInactivas = marcasInactivas
+                ElementosActivos = marcasActivas,
+                Pagina = paginacion.Pagina,
+                RecordsPorPagina = paginacion.RecordsPorPagina,
+                CantidadTotalRecords = totalMarcas,
+                BaseURL = "/Marcas"
 
             };
 
@@ -148,6 +151,27 @@ namespace WebApplicationVentas.Controllers
             unitOfWork.repositorioMarcas.editar(modelo);
             await unitOfWork.Complete();
             return RedirectToAction("Index", "Marcas");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ElementosInactivos(PaginacionViewModel paginacion)
+        {
+            var marcasInactivas = await unitOfWork.repositorioMarcas.marcasInactivas(paginacion);
+
+            var totalMarcas = unitOfWork.repositorioMarcas.contarElementosInactivos();
+
+            var almacenes = new PaginacionRespuesta<MarcasViewModel>()
+            {
+                ElementosInactivos = marcasInactivas,
+                Pagina = paginacion.Pagina,
+                RecordsPorPagina = paginacion.RecordsPorPagina,
+                CantidadTotalRecords = totalMarcas,
+                BaseURL = "/Marcas/ElementosInactivos"
+
+            };
+
+
+            return View(almacenes);
         }
 
     }

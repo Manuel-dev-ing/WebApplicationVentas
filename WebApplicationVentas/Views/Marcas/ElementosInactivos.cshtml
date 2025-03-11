@@ -1,14 +1,18 @@
-﻿@model PaginacionRespuesta<RubrosViewModel>
+﻿@model PaginacionRespuesta<MarcasViewModel>
 
 @{
-    ViewData["Title"] = "Rubros";
+    ViewData["Title"] = "Listado de Marcas";
 }
 
 <div class="pagetitle">
-    <h1>Rubros</h1>
+    <h1>Marcas</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Marcas">Marcas</a></li>
+            <li class="breadcrumb-item active">Marcas Inactivos</li>
+        </ol>
+    </nav>
 </div><!-- End Page Title -->
-
-<a class="btn btn-outline-primary btn-sm mb-4" asp-action="Crear" asp-controller="Rubros" title="Crear nuevo almacen">Nuevo Rubro</a>
 
 <div class="d-flex mb-1">
 
@@ -31,17 +35,7 @@
     </div>
 
 </div>
-
-<div class="d-flex mb-1">
-
-    <div class="ms-auto p-2">
-        <a class="btn btn-sm btn-outline-danger" asp-action="ElementosInactivos" asp-controller="Rubros">Ver Registros Inactivos</a>
-
-    </div>
-
-</div>
-
-<table class="table table-bordered table-hover table-responsive mb-5 table-sm">
+<table class="table table-hover table-responsive mb-5 table-sm">
     <thead class="cabecera-tabla">
         <tr>
             <th></th>
@@ -51,15 +45,14 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model.ElementosActivos)
+        @foreach (var item in Model.ElementosInactivos)
         {
             <tr>
                 <td>@item.Id</td>
                 <td>@item.Descripcion</td>
-                <td>@item.FechaRegistro</td>
+                <td>@item.FechaCreacion</td>
                 <td>
-                    <a class="btn btn-sm btn-outline-warning" asp-route-id="@item.Id" asp-action="Editar" asp-controller="Rubros" title="Editar"><i class="bi bi-pencil"></i></a>
-                    <a class="btn btn-sm btn-outline-danger" asp-route-id="@item.Id" asp-action="Eliminar" asp-controller="Rubros" title="Eliminar"><i class="bi bi-trash"></i></a>
+                    <a class="btn btn-sm btn-outline-success" asp-route-id="@item.Id" asp-action="Restaurar" asp-controller="Marcas"><i class="bi bi-recycle"></i> Restaurar</a>
                 </td>
 
             </tr>
@@ -70,19 +63,16 @@
     <partial name="_Paginacion" />
 
 </div>
+
 @section Scripts {
     <script src="~/js/buscar.js"></script>
 
     <script>
         $("#cantidadRecordsPorPagina").change(function () {
             const recordsPorPagina = $(this).val();
-            location.href = `/Rubros/?Pagina=1&RecordsPorPagina=${recordsPorPagina}`;
+            location.href = `/Marcas/ElementosInactivos?Pagina=1&RecordsPorPagina=${recordsPorPagina}`;
         });
     </script>
 
 }
-
-
-
-
 

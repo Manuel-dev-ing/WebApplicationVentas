@@ -15,15 +15,18 @@ namespace WebApplicationVentas.Controllers
             this.unitOfWork = unitOfWork;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(PaginacionViewModel paginacion)
         {
-            var registrosActivos = await unitOfWork.repositorioClientes.clientesActivos();
-            var registrosInactivos = await unitOfWork.repositorioClientes.clientesInactivos();
+            var registrosActivos = await unitOfWork.repositorioClientes.clientesActivos(paginacion);
+            var totalClientes = unitOfWork.repositorioClientes.contarElementos();
 
-            var modelo = new ClientesModel()
+            var modelo = new PaginacionRespuesta<ClienteViewModel>()
             {
-                clientesActivos = registrosActivos,
-                clientesInactivos = registrosInactivos
+                ElementosActivos = registrosActivos,
+                Pagina = paginacion.Pagina,
+                RecordsPorPagina = paginacion.RecordsPorPagina,
+                CantidadTotalRecords = totalClientes,
+                BaseURL = "/Clientes"
             };
 
 
@@ -161,9 +164,29 @@ namespace WebApplicationVentas.Controllers
             await unitOfWork.Complete();
 
             return RedirectToAction("Index", "Clientes");
+        }
 
 
+        [HttpGet]
+        public async Task<IActionResult> ElementosInactivos(PaginacionViewModel paginacion)
+        {
+            var categoriasInactivas = await unitOfWork.repositorioClientes.clientesInactivos(paginacion);
 
+            var total = unitOfWork.repositorioClientes.contarElementosInactivos();
+
+            var almacenes = new PaginacionRespuesta<ClienteViewModel>()
+            {
+
+                ElementosInactivos = categoriasInactivas,
+                Pagina = paginacion.Pagina,
+                RecordsPorPagina = paginacion.RecordsPorPagina,
+                CantidadTotalRecords = total,
+                BaseURL = "/Clientes/ElementosInactivos"
+
+            };
+
+
+            return View(almacenes);
         }
 
 

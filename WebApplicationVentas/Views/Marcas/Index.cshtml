@@ -1,4 +1,4 @@
-﻿@model MarcasModel
+﻿@model PaginacionRespuesta<MarcasViewModel>
 
 @{
     ViewData["Title"] = "Marcas";
@@ -12,16 +12,26 @@
 
 <br />
 
-<!-- Modal -->
-<partial name="_ModalRegistrosInactivosMarcas" model="Model.marcasInactivas" />
-<!-- Fin Modal -->
-
 <a class="btn btn-outline-primary btn-sm mb-4" asp-action="Crear" asp-controller="Marcas" title="Crear nuevo almacen">Nueva Marca</a>
 
 <div class="d-flex mb-1">
 
+    <div class="p-2" style="margin-top:7px">
+        <label class="form-label">Mostrar</label>
+    </div>
+
+
+    <div class="p-2">
+        <select asp-for="@Model.RecordsPorPagina" id="cantidadRecordsPorPagina" class="form-select">
+            <option>3</option>
+            <option>5</option>
+            <option>10</option>
+            <option>25</option>
+        </select>
+    </div>
+
     <div class="ms-auto p-2">
-        <input type="search" class="form-control" placeholder="buscar..." id="buscar" />
+        <input type="search" class="form-control" placeholder="buscar..." id="inputBuscar" />
     </div>
 
 </div>
@@ -29,7 +39,7 @@
 <div class="d-flex mb-1">
 
     <div class="ms-auto p-2">
-        <a class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">Ver Registros Inactivos</a>
+        <a class="btn btn-sm btn-outline-danger" asp-action="ElementosInactivos" asp-controller="Marcas">Ver Registros Inactivos</a>
 
     </div>
 
@@ -46,7 +56,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model.marcasActivas)
+        @foreach (var item in Model.ElementosActivos)
         {
             <tr>
                 <td>@item.Id</td>
@@ -63,10 +73,20 @@
         }
     </tbody>
 </table>
+<div class="d-flex justify-content-end">
+    <partial name="_Paginacion" />
 
+</div>
 
 @section Scripts {
+    <script src="~/js/buscar.js"></script>
 
+    <script>
+        $("#cantidadRecordsPorPagina").change(function () {
+            const recordsPorPagina = $(this).val();
+            location.href = `/Marcas?Pagina=1&RecordsPorPagina=${recordsPorPagina}`;
+        });
+    </script>
 
 }
 

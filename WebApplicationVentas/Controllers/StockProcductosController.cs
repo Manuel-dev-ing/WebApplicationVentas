@@ -16,11 +16,21 @@ namespace WebApplicationVentas.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(PaginacionViewModel paginacion)
         {
-            var entidad = await unitOfWork.repositorioStockProductos.obtenerStockProductos();
+            var entidad = await unitOfWork.repositorioStockProductos.obtenerStockProductos(paginacion);
+            var total = unitOfWork.repositorioStockProductos.contarElementos();
 
-            return View(entidad);
+            var modelo = new PaginacionRespuesta<StockProductosViewModel>()
+            {
+                ElementosActivos = entidad,
+                Pagina = paginacion.Pagina,
+                RecordsPorPagina = paginacion.RecordsPorPagina,
+                CantidadTotalRecords = total,
+                BaseURL = "/StockProcductos"
+            };
+
+            return View(modelo);
         }
 
 

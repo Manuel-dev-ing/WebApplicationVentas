@@ -68,9 +68,9 @@
 </head>
 <body>
     <div class="ticket">
-        <h2>Supermercado XYZ</h2>
-        <p>Fecha: @DateTime.Now.ToString("hh:mm:ss")</p>
-        <p>Hora: @DateTime.Now.ToString("M/d/yyyy")</p>
+        <h2>@Model.NombreNegocio</h2>
+        <p>Fecha: @DateTime.Now.ToString("M/d/yyyy")</p>
+        <p>Hora: @DateTime.Now.ToString("hh:mm:ss")</p>
         <div class="items">
             <table>
                 <tr>
@@ -94,7 +94,7 @@
 
             <p class="psubtotal">SubTotal: $@Model.SubTotal</p>
             <p class="ptotal">Total: $@Model.Total</p>
-            <div>
+            
             @* </div> *@
             @* <div> *@
             @*     <p class="subtotal"></p> *@

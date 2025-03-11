@@ -6,12 +6,15 @@ namespace WebApplicationVentas.Servicios
 {
     public interface IRepositorioRubros
     {
+        int contarElementos();
+        int contarElementosInactivos();
         void editarRubro(Rubro rubro);
         Task<bool> existeRubro(int id);
         void guardarRubro(Rubro rubro);
+        Task<IEnumerable<RubrosViewModel>> listadoActvos();
         Task<Rubro> obtenerRubroPorId(int id);
-        Task<IEnumerable<RubrosViewModel>> rubrosActvos();
-        Task<IEnumerable<RubrosViewModel>> rubrosInactvos();
+        Task<IEnumerable<RubrosViewModel>> rubrosActvos(PaginacionViewModel paginacion);
+        Task<IEnumerable<RubrosViewModel>> rubrosInactvos(PaginacionViewModel paginacion);
     }
 
     public class RepositorioRubros: IRepositorioRubros
@@ -23,9 +26,41 @@ namespace WebApplicationVentas.Servicios
             this.context = context;
         }
 
-        public async Task<IEnumerable<RubrosViewModel>> rubrosActvos()
+        public int contarElementos()
         {
-            var rubros = await context.Rubros.Where(x => x.EsActivo == true).Select(a => new RubrosViewModel()
+            var resultado = context.Rubros.Where(x => x.EsActivo == true).Count();
+            return resultado;
+        }
+        public int contarElementosInactivos()
+        {
+            var resultado = context.Rubros.Where(x => x.EsActivo == false).Count();
+            return resultado;
+        }
+
+        public async Task<IEnumerable<RubrosViewModel>> listadoActvos()
+        {
+            var rubros = await context.Rubros
+                .Where(x => x.EsActivo == true)
+                .Select(a => new RubrosViewModel()
+                {
+                    Id = a.Id,
+                    Descripcion = a.Descripcion,
+                    EsActivo = a.EsActivo,
+                    FechaRegistro = a.FechaRegistro
+
+                }).ToListAsync();
+
+            return rubros;
+        }
+
+        public async Task<IEnumerable<RubrosViewModel>> rubrosActvos(PaginacionViewModel paginacion)
+        {
+            var rubros = await context.Rubros
+                .Where(x => x.EsActivo == true)
+                .OrderBy(x => x.Id)
+                .Skip(paginacion.RecordsASaltar)
+                .Take(paginacion.RecordsPorPagina)
+                .Select(a => new RubrosViewModel()
             {
                 Id = a.Id,
                 Descripcion = a.Descripcion,
@@ -37,9 +72,14 @@ namespace WebApplicationVentas.Servicios
             return rubros;
         }
 
-        public async Task<IEnumerable<RubrosViewModel>> rubrosInactvos()
+        public async Task<IEnumerable<RubrosViewModel>> rubrosInactvos(PaginacionViewModel paginacion)
         {
-            var rubros = await context.Rubros.Where(x => x.EsActivo == false).Select(a => new RubrosViewModel()
+            var rubros = await context.Rubros
+                .Where(x => x.EsActivo == false)
+                .OrderBy(x => x.Id)
+                .Skip(paginacion.RecordsASaltar)
+                .Take(paginacion.RecordsPorPagina)
+                .Select(a => new RubrosViewModel()
             {
                 Id = a.Id,
                 Descripcion = a.Descripcion,

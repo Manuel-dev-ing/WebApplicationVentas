@@ -15,15 +15,41 @@ namespace WebApplicationVentas.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(PaginacionViewModel paginacion)
         {
-            var rubrosActivos = await unitOfWork.repositorioRubros.rubrosActvos();
-            var rubrosInactivos = await unitOfWork.repositorioRubros.rubrosInactvos();
+            var rubrosActivos = await unitOfWork.repositorioRubros.rubrosActvos(paginacion);
+            var total = unitOfWork.repositorioRubros.contarElementos();
 
-            var modelo = new RubrosModel()
+
+            var modelo = new PaginacionRespuesta<RubrosViewModel>()
             {
-                rubrosActivos = rubrosActivos,
-                rubrosInactivos = rubrosInactivos
+                ElementosActivos = rubrosActivos,
+                Pagina = paginacion.Pagina,
+                RecordsPorPagina = paginacion.RecordsPorPagina,
+                CantidadTotalRecords = total,
+                BaseURL = "/Rubros"
+
+            };
+
+            return View(modelo);
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> ElementosInactivos(PaginacionViewModel paginacion)
+        {
+            var rubrosInactivos = await unitOfWork.repositorioRubros.rubrosInactvos(paginacion);
+            var total = unitOfWork.repositorioRubros.contarElementosInactivos();
+
+
+            var modelo = new PaginacionRespuesta<RubrosViewModel>()
+            {
+                ElementosInactivos = rubrosInactivos,
+                Pagina = paginacion.Pagina,
+                RecordsPorPagina = paginacion.RecordsPorPagina,
+                CantidadTotalRecords = total,
+                BaseURL = "/Rubros/ElementosInactivos"
+
             };
 
             return View(modelo);

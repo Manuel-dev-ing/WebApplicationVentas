@@ -1,18 +1,17 @@
-﻿
-@model PaginacionRespuesta<ClienteViewModel>
-
+﻿@model PaginacionRespuesta<ClienteViewModel>
 @{
-    ViewData["Title"] = "Clientes";
+    ViewData["Title"] = "Listado de Clientes";
 }
-
 
 <div class="pagetitle">
     <h1>Clientes</h1>
-
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Clientes">Clientes</a></li>
+            <li class="breadcrumb-item active">Clientes Inactivos</li>
+        </ol>
+    </nav>
 </div><!-- End Page Title -->
-
-<a class="btn btn-outline-primary btn-sm mb-4" asp-action="Crear" asp-controller="Clientes" title="Crear nueva categoria">Nuevo Cliente</a>
-
 <div class="d-flex mb-1">
 
     <div class="p-2" style="margin-top:7px">
@@ -30,22 +29,11 @@
     </div>
 
     <div class="ms-auto p-2">
-        <input type="search" class="form-control" placeholder="buscar..." id="inputBuscar" />
+        <input type="search" class="form-control" placeholder="buscar" id="inputBuscar" />
     </div>
 
 </div>
-
-<div class="d-flex mb-1">
-
-    <div class="ms-auto p-2">
-        <a class="btn btn-sm btn-outline-danger" asp-action="ElementosInactivos" asp-controller="Clientes">Ver Registros Inactivos</a>
-
-    </div>
-
-</div>
-
-
-<table class="table table-hover table-responsive mb-5 table-sm">
+<table class="table table-bordered table-hover table-responsive mb-5 table-sm">
     <thead class="cabecera-tabla">
         <tr>
             <th></th>
@@ -59,7 +47,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model.ElementosActivos)
+        @foreach (var item in Model.ElementosInactivos)
         {
             <tr>
                 <td>@item.Id</td>
@@ -70,8 +58,7 @@
                 <td>@item.Calle</td>
                 <td>@item.Colonia</td>
                 <td>
-                    <a class="btn btn-sm btn-outline-warning" asp-route-id="@item.Id" asp-action="Editar" asp-controller="Clientes" title="Editar"><i class="bi bi-pencil"></i></a>
-                    <a class="btn btn-sm btn-outline-danger" asp-route-id="@item.Id" asp-action="Eliminar" asp-controller="Clientes" title="Eliminar"><i class="bi bi-trash"></i></a>
+                    <a class="btn btn-sm btn-outline-success" asp-route-id="@item.Id" asp-action="Restaurar" asp-controller="Clientes"><i class="bi bi-recycle"></i> Restaurar</a>
                 </td>
 
             </tr>
@@ -83,22 +70,14 @@
 
 </div>
 
-
 @section Scripts {
     <script src="~/js/buscar.js"></script>
 
     <script>
         $("#cantidadRecordsPorPagina").change(function () {
             const recordsPorPagina = $(this).val();
-            location.href = `/Clientes/?Pagina=1&RecordsPorPagina=${recordsPorPagina}`;
+            location.href = `/Clientes/ElementosInactivos?Pagina=1&RecordsPorPagina=${recordsPorPagina}`;
         });
     </script>
 
 }
-
-
-
-
-
-
-

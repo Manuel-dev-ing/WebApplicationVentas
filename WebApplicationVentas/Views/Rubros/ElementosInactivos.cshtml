@@ -1,15 +1,18 @@
 ﻿@model PaginacionRespuesta<RubrosViewModel>
 
 @{
-    ViewData["Title"] = "Rubros";
+	ViewData["Title"] = "Rubros";
 }
 
 <div class="pagetitle">
     <h1>Rubros</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Rubros">Rubros</a></li>
+            <li class="breadcrumb-item active">Rubros Inactivos</li>
+        </ol>
+    </nav>
 </div><!-- End Page Title -->
-
-<a class="btn btn-outline-primary btn-sm mb-4" asp-action="Crear" asp-controller="Rubros" title="Crear nuevo almacen">Nuevo Rubro</a>
-
 <div class="d-flex mb-1">
 
     <div class="p-2" style="margin-top:7px">
@@ -31,16 +34,6 @@
     </div>
 
 </div>
-
-<div class="d-flex mb-1">
-
-    <div class="ms-auto p-2">
-        <a class="btn btn-sm btn-outline-danger" asp-action="ElementosInactivos" asp-controller="Rubros">Ver Registros Inactivos</a>
-
-    </div>
-
-</div>
-
 <table class="table table-bordered table-hover table-responsive mb-5 table-sm">
     <thead class="cabecera-tabla">
         <tr>
@@ -51,38 +44,34 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model.ElementosActivos)
+        @foreach (var item in Model.ElementosInactivos)
         {
             <tr>
                 <td>@item.Id</td>
                 <td>@item.Descripcion</td>
                 <td>@item.FechaRegistro</td>
                 <td>
-                    <a class="btn btn-sm btn-outline-warning" asp-route-id="@item.Id" asp-action="Editar" asp-controller="Rubros" title="Editar"><i class="bi bi-pencil"></i></a>
-                    <a class="btn btn-sm btn-outline-danger" asp-route-id="@item.Id" asp-action="Eliminar" asp-controller="Rubros" title="Eliminar"><i class="bi bi-trash"></i></a>
+                    <a class="btn btn-sm btn-outline-success" asp-route-id="@item.Id" asp-action="Restaurar" asp-controller="Rubros"><i class="bi bi-recycle"></i> Restaurar</a>
                 </td>
 
             </tr>
         }
     </tbody>
 </table>
+
 <div class="d-flex justify-content-end">
     <partial name="_Paginacion" />
 
 </div>
+
 @section Scripts {
     <script src="~/js/buscar.js"></script>
 
     <script>
         $("#cantidadRecordsPorPagina").change(function () {
             const recordsPorPagina = $(this).val();
-            location.href = `/Rubros/?Pagina=1&RecordsPorPagina=${recordsPorPagina}`;
+            location.href = `/Rubros/ElementosInactivos?Pagina=1&RecordsPorPagina=${recordsPorPagina}`;
         });
     </script>
 
 }
-
-
-
-
-

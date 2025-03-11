@@ -8,11 +8,13 @@ namespace WebApplicationVentas.Servicios
     public interface IRepositorioProveedores
     {
         void actualizar(Proveedore proveedore);
+        int contarElementos();
+        int contarElementosInactivos();
         Task<bool> existeProveedor(int id);
         void guardar(Proveedore proveedor);
         Task<Proveedore> obtenerProveedorPorId(int id);
-        Task<IEnumerable<ProvedoresViewModel>> proveedoresActivos();
-        Task<IEnumerable<ProvedoresViewModel>> proveedoresInactivos();
+        Task<IEnumerable<ProvedoresViewModel>> proveedoresActivos(PaginacionViewModel paginacion);
+        Task<IEnumerable<ProvedoresViewModel>> proveedoresInactivos(PaginacionViewModel paginacion);
     }
 
     public class RepositorioProveedores: IRepositorioProveedores
@@ -23,28 +25,27 @@ namespace WebApplicationVentas.Servicios
         {
             this.context = context;
         }
-        public async Task<IEnumerable<ProvedoresViewModel>> proveedoresActivos()
+
+        public int contarElementos()
+        {
+            var resultado = context.Proveedores.Where(x => x.EsActivo == true).Count();
+            return resultado;
+        }
+
+        public int contarElementosInactivos()
+        {
+            var resultado = context.Proveedores.Where(x => x.EsActivo == false).Count();
+            return resultado;
+        }
+
+        public async Task<IEnumerable<ProvedoresViewModel>> proveedoresActivos(PaginacionViewModel paginacion)
         {
             var entidad = await context.Proveedores
                 .Include(x => x.IdRubroNavigation)
                 .Where(x => x.EsActivo == true)
-                .Select(a => new ProvedoresViewModel()
-            {
-                Id = a.Id,
-                Rubros = a.IdRubroNavigation.Descripcion,
-                Nombre = a.Nombre,
-                Email = a.Email,
-                Telefono = a.Telefono
-            }).ToListAsync();
-
-            return entidad;
-        }
-
-        public async Task<IEnumerable<ProvedoresViewModel>> proveedoresInactivos()
-        {
-            var entidad = await context.Proveedores
-                .Include(x => x.IdRubroNavigation)
-                .Where(x => x.EsActivo == false)
+                .OrderBy(x => x.Id)
+                .Skip(paginacion.RecordsASaltar)
+                .Take(paginacion.RecordsPorPagina)
                 .Select(a => new ProvedoresViewModel()
                 {
                     Id = a.Id,
@@ -52,6 +53,28 @@ namespace WebApplicationVentas.Servicios
                     Nombre = a.Nombre,
                     Email = a.Email,
                     Telefono = a.Telefono
+                }).ToListAsync();
+
+            return entidad;
+        }
+
+        public async Task<IEnumerable<ProvedoresViewModel>> proveedoresInactivos(PaginacionViewModel paginacion)
+        {
+            var entidad = await context.Proveedores
+                .Include(x => x.IdRubroNavigation)
+                .Where(x => x.EsActivo == false)
+                .OrderBy(x => x.Id)
+                .Skip(paginacion.RecordsASaltar)
+                .Take(paginacion.RecordsPorPagina)
+                .Select(a => new ProvedoresViewModel()
+                {
+                    
+                    Id = a.Id,
+                    Rubros = a.IdRubroNavigation.Descripcion,
+                    Nombre = a.Nombre,
+                    Email = a.Email,
+                    Telefono = a.Telefono
+
                 }).ToListAsync();
 
             return entidad;

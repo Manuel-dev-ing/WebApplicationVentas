@@ -1,17 +1,20 @@
-﻿
-@model PaginacionRespuesta<ClienteViewModel>
+﻿@model PaginacionRespuesta<UsuariosViewModel>
 
 @{
-    ViewData["Title"] = "Clientes";
+
+	ViewData["Title"] = "Usuarios";
+
 }
 
-
 <div class="pagetitle">
-    <h1>Clientes</h1>
-
+    <h1>Usuarios</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Usuarios">Usuarios</a></li>
+            <li class="breadcrumb-item active">Usuarios Inactivos</li>
+        </ol>
+    </nav>
 </div><!-- End Page Title -->
-
-<a class="btn btn-outline-primary btn-sm mb-4" asp-action="Crear" asp-controller="Clientes" title="Crear nueva categoria">Nuevo Cliente</a>
 
 <div class="d-flex mb-1">
 
@@ -30,48 +33,36 @@
     </div>
 
     <div class="ms-auto p-2">
-        <input type="search" class="form-control" placeholder="buscar..." id="inputBuscar" />
+        <input type="search" class="form-control" placeholder="buscar" id="inputBuscar" />
     </div>
 
 </div>
-
-<div class="d-flex mb-1">
-
-    <div class="ms-auto p-2">
-        <a class="btn btn-sm btn-outline-danger" asp-action="ElementosInactivos" asp-controller="Clientes">Ver Registros Inactivos</a>
-
-    </div>
-
-</div>
-
-
 <table class="table table-hover table-responsive mb-5 table-sm">
     <thead class="cabecera-tabla">
         <tr>
             <th></th>
+            <th>Rol</th>
             <th>Nombre</th>
             <th>Apellidos</th>
-            <th>Email</th>
+            <th>Correo</th>
             <th>Telefono</th>
-            <th>Calle</th>
-            <th>Colonia</th>
             <th>Acciones</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model.ElementosActivos)
+        @foreach (var item in Model.ElementosInactivos)
         {
             <tr>
                 <td>@item.Id</td>
+                <td>@item.NombreRol</td>
                 <td>@item.Nombre</td>
                 <td>@item.Apellidos</td>
-                <td>@item.Email</td>
+                <td>@item.Correo</td>
                 <td>@item.Telefono</td>
-                <td>@item.Calle</td>
-                <td>@item.Colonia</td>
                 <td>
-                    <a class="btn btn-sm btn-outline-warning" asp-route-id="@item.Id" asp-action="Editar" asp-controller="Clientes" title="Editar"><i class="bi bi-pencil"></i></a>
-                    <a class="btn btn-sm btn-outline-danger" asp-route-id="@item.Id" asp-action="Eliminar" asp-controller="Clientes" title="Eliminar"><i class="bi bi-trash"></i></a>
+
+                    <a class="btn btn-sm btn-outline-success" asp-route-id="@item.Id" asp-action="Restaurar" asp-controller="Usuarios"><i class="bi bi-recycle"></i> Restaurar</a>
+
                 </td>
 
             </tr>
@@ -83,18 +74,18 @@
 
 </div>
 
-
 @section Scripts {
     <script src="~/js/buscar.js"></script>
 
     <script>
         $("#cantidadRecordsPorPagina").change(function () {
             const recordsPorPagina = $(this).val();
-            location.href = `/Clientes/?Pagina=1&RecordsPorPagina=${recordsPorPagina}`;
+            location.href = `/Usuarios/ElementosInactivos?Pagina=1&RecordsPorPagina=${recordsPorPagina}`;
         });
     </script>
 
 }
+
 
 
 

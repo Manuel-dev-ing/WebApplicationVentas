@@ -1,0 +1,87 @@
+﻿@model PaginacionRespuesta<AlmacenViewModel>
+
+@{
+    ViewData["Title"] = "Listado de Almacemes";
+}
+
+<div class="pagetitle">
+    <h1>Almacenes</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Almacenes">Almacenes</a></li>
+            <li class="breadcrumb-item active">Almacenes Inactivos</li>
+        </ol>
+    </nav>
+</div><!-- End Page Title -->
+
+<br />
+
+<div class="d-flex mb-1 border">
+
+    <div class="p-2" style="margin-top:7px">
+        <label class="form-label">Mostrar</label>
+    </div>
+
+
+    <div class="p-2">
+        <select asp-for="@Model.RecordsPorPagina" id="cantidadRecordsPorPaginas" class="form-select">
+            <option>3</option>
+            <option>5</option>
+            <option>10</option>
+            <option>25</option>
+        </select>
+    </div>
+
+    <div class="ms-auto p-2">
+        <input type="search" class="form-control" placeholder="buscar..." id="inputBuscar" />
+    </div>
+
+</div>
+
+<table class="table table-hover table-responsive mb-5 table-sm">
+    <thead class="cabecera-tabla">
+        <tr>
+            <th></th>
+            <th>Nombre</th>
+            <th>Fecha Registro</th>
+            <th>Acciones</th> 
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.ElementosInactivos)
+        {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.Nombre</td>
+                    <td>@item.FechaRegistro</td>
+                    <td>
+                        <a class="btn btn-sm btn-outline-success" asp-route-id="@item.Id" asp-action="Restaurar" asp-controller="Almacenes"><i class="bi bi-recycle"></i> Restaurar</a>
+                    </td>
+
+                </tr>
+        }
+    </tbody>
+</table>
+<div class="d-flex justify-content-end">
+    <partial name="_Paginacion" />
+
+</div>
+
+@section Scripts {
+        <script src="~/js/buscar.js"></script>
+        <script>
+            $("#cantidadRecordsPorPaginas").change(function () {
+                const recordsPorPagina = $(this).val();
+                location.href = `/Almacenes/ElementosInactivos/?Pagina=1&RecordsPorPagina=${recordsPorPagina}`;
+            });
+        </script>
+
+}
+
+
+
+
+
+
+
+

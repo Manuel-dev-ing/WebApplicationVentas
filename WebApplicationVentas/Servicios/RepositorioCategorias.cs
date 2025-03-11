@@ -6,13 +6,16 @@ namespace WebApplicationVentas.Servicios
 {
     public interface IRepositorioCategorias
     {
+        Task<IEnumerable<CategoriaViewModel>> CategoriasActivas();
+        int contarElementos();
+        int contarElementosInactivos();
         void editarCategoria(Categoria categoria);
         void EliminarCategoria(Categoria categoria);
         Task<bool> existeCategoriaPorId(int id);
         void guardarCategoria(Categoria categoria);
         Task<Categoria> obtenerCategoriaPorId(int id);
-        Task<IEnumerable<CategoriaViewModel>> obtenerCategoriasActivas();
-        Task<IEnumerable<CategoriaViewModel>> obtenerCategoriasInactivas();
+        Task<IEnumerable<CategoriaViewModel>> obtenerCategoriasActivas(PaginacionViewModel paginacion);
+        Task<IEnumerable<CategoriaViewModel>> obtenerCategoriasInactivas(PaginacionViewModel paginacion);
     }
 
     public class RepositorioCategorias: IRepositorioCategorias
@@ -24,25 +27,63 @@ namespace WebApplicationVentas.Servicios
             this.context = context;
         }
 
-
-        public async Task<IEnumerable<CategoriaViewModel>> obtenerCategoriasActivas()
+        public int contarElementos()
         {
-            var entidad = await context.Categorias.Where(x => x.EsActivo == true).Select(a => new CategoriaViewModel
-            {
+            var resultado = context.Categorias.Where(x => x.EsActivo == true).Count();
+            return resultado;
+        }
 
-                Id = a.Id,
-                Nombre = a.Descripcion,
-                Esactivo = a.EsActivo,
-                FechaRegistro = a.FechaRegistro
+        public int contarElementosInactivos()
+        {
+            var resultado = context.Categorias.Where(x => x.EsActivo == false).Count();
+            return resultado;
+        }
 
-            }).ToListAsync();
+        public async Task<IEnumerable<CategoriaViewModel>> obtenerCategoriasActivas(PaginacionViewModel paginacion)
+        {
+            var entidad = await context.Categorias
+                .Where(x => x.EsActivo == true)
+                .OrderBy(x => x.Id)
+                .Skip(paginacion.RecordsASaltar)
+                .Take(paginacion.RecordsPorPagina)
+                .Select(a => new CategoriaViewModel()
+                {
+
+                    Id = a.Id,
+                    Nombre = a.Descripcion,
+                    Esactivo = a.EsActivo,
+                    FechaRegistro = a.FechaRegistro
+
+                }).ToListAsync();
 
             return entidad;
         }
 
-        public async Task<IEnumerable<CategoriaViewModel>> obtenerCategoriasInactivas()
+        public async Task<IEnumerable<CategoriaViewModel>> CategoriasActivas()
         {
-            var entidad = await context.Categorias.Where(x => x.EsActivo == false).Select(a => new CategoriaViewModel
+            var entidad = await context.Categorias
+                .Where(x => x.EsActivo == true)
+                .Select(a => new CategoriaViewModel()
+                {
+
+                    Id = a.Id,
+                    Nombre = a.Descripcion,
+                    Esactivo = a.EsActivo,
+                    FechaRegistro = a.FechaRegistro
+
+                }).ToListAsync();
+
+            return entidad;
+        }
+
+        public async Task<IEnumerable<CategoriaViewModel>> obtenerCategoriasInactivas(PaginacionViewModel paginacion)
+        {
+            var entidad = await context.Categorias
+                .Where(x => x.EsActivo == false)
+                .OrderBy(x => x.Id)
+                .Skip(paginacion.RecordsASaltar)
+                .Take(paginacion.RecordsPorPagina)
+                .Select(a => new CategoriaViewModel
             {
 
                 Id = a.Id,

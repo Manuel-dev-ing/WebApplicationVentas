@@ -8,13 +8,14 @@ namespace WebApplicationVentas.Servicios
     public interface IRepositorioTiposDocumentosProvCliente
     {
         void actualizar(TiposDocumentosProvCliente documentosProvCliente);
+        int contarElementos();
+        int contarElementosInactivos();
         Task<bool> existeRegistro(int id);
         void guardar(TiposDocumentosProvCliente documentosProvCliente);
+        Task<IEnumerable<TiposDocumentoViewModel>> ListadoregistrosActivos();
         Task<TiposDocumentosProvCliente> obtenerTiposDocumentos(int id);
-        Task<IEnumerable<TiposDocumentoViewModel>> registrosActivos();
-        Task<IEnumerable<TiposDocumentoViewModel>> registrosInactivos();
-
-
+        Task<IEnumerable<TiposDocumentoViewModel>> registrosActivos(PaginacionViewModel paginacion);
+        Task<IEnumerable<TiposDocumentoViewModel>> registrosInactivos(PaginacionViewModel paginacion);
     }
 
     public class RepositorioTiposDocumentosProvCliente: IRepositorioTiposDocumentosProvCliente
@@ -26,27 +27,66 @@ namespace WebApplicationVentas.Servicios
             this.context = context;
         }
 
-        public async Task<IEnumerable<TiposDocumentoViewModel>> registrosActivos()
+        public int contarElementos()
         {
-            var tiposDocumentos = await context.TiposDocumentosProvClientes.Where(x => x.EsActivo == true).Select(a => new TiposDocumentoViewModel()
-            {
-                Id = a.Id,
-                Descripcion = a.Descripcion,
-                Fecha = a.FechaRegistro
+            var resultado = context.TiposDocumentosProvClientes.Where(x => x.EsActivo == true).Count();
+            return resultado;
+        }
 
-            }).ToListAsync();
+        public int contarElementosInactivos()
+        {
+            var resultado = context.TiposDocumentosProvClientes.Where(x => x.EsActivo == false).Count();
+            return resultado;
+        }
+
+
+        public async Task<IEnumerable<TiposDocumentoViewModel>> ListadoregistrosActivos()
+        {
+            var tiposDocumentos = await context.TiposDocumentosProvClientes
+                .Where(x => x.EsActivo == true)
+                .Select(a => new TiposDocumentoViewModel()
+                {
+                    Id = a.Id,
+                    Descripcion = a.Descripcion,
+                    Fecha = a.FechaRegistro
+
+                }).ToListAsync();
+
             return tiposDocumentos;
         }
 
-        public async Task<IEnumerable<TiposDocumentoViewModel>> registrosInactivos()
+        public async Task<IEnumerable<TiposDocumentoViewModel>> registrosActivos(PaginacionViewModel paginacion)
         {
-            var tiposDocumentos = await context.TiposDocumentosProvClientes.Where(x => x.EsActivo == false).Select(a => new TiposDocumentoViewModel()
-            {
-                Id = a.Id,
-                Descripcion = a.Descripcion,
-                Fecha = a.FechaRegistro
+            var tiposDocumentos = await context.TiposDocumentosProvClientes
+                .Where(x => x.EsActivo == true)
+                .OrderBy(x => x.Id)
+                .Skip(paginacion.RecordsASaltar)
+                .Take(paginacion.RecordsPorPagina)
+                .Select(a => new TiposDocumentoViewModel()
+                {
+                    Id = a.Id,
+                    Descripcion = a.Descripcion,
+                    Fecha = a.FechaRegistro
 
-            }).ToListAsync();
+                }).ToListAsync();
+
+            return tiposDocumentos;
+        }
+
+        public async Task<IEnumerable<TiposDocumentoViewModel>> registrosInactivos(PaginacionViewModel paginacion)
+        {
+            var tiposDocumentos = await context.TiposDocumentosProvClientes
+                .Where(x => x.EsActivo == false)
+                .OrderBy(x => x.Id)
+                .Skip(paginacion.RecordsASaltar)
+                .Take(paginacion.RecordsPorPagina)
+                .Select(a => new TiposDocumentoViewModel()
+                {
+                    Id = a.Id,
+                    Descripcion = a.Descripcion,
+                    Fecha = a.FechaRegistro
+
+                }).ToListAsync();
 
             return tiposDocumentos;
         }

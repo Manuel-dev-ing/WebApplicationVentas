@@ -131,12 +131,12 @@ function mostrarTablaCompras() {
 
         </div>
 
-        <table class="table table-bordered table-hover table-responsive mb-5 table-sm">
+        <table class="table table-hover table-responsive mb-5 table-sm">
             <thead class="cabecera-tabla">
                 <tr>
                     <th></th>
-                    <th>Proveedor</th>
-                    <th>Almacen</th>
+                    <th>Usuario</th>
+                    <th>Cliente</th>
                     <th>Sub Total</th>
                     <th>Total</th>
                     <th>Fecha</th>

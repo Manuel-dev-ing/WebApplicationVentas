@@ -8,11 +8,14 @@ namespace WebApplicationVentas.Servicios
     public interface IRepositorioRol
     {
         void Actualizar(Rol rol);
+        int contarElementos();
+        int contarElementosInactivos();
         Task<bool> existeRol(int id);
         void Guardar(Rol rol);
+        Task<IEnumerable<RolViewModel>> Listadorol();
         Task<Rol> obtenerPorId(int id);
-        Task<IEnumerable<RolViewModel>> rolActivo();
-        Task<IEnumerable<RolViewModel>> rolInactivo();
+        Task<IEnumerable<RolViewModel>> rolActivo(PaginacionViewModel paginacion);
+        Task<IEnumerable<RolViewModel>> rolInactivo(PaginacionViewModel paginacion);
     }
 
 
@@ -25,27 +28,66 @@ namespace WebApplicationVentas.Servicios
             this.context = context;
         }
 
-
-        public async Task<IEnumerable<RolViewModel>> rolActivo()
+        public int contarElementos()
         {
-            var entidad = await context.Rols.Where(x => x.EsActivo == true).Select(a => new RolViewModel()
-            {
-                Id = a.Id,
-                Descripcion = a.Descripcion,
-                Fecha = a.FechaRegistro
-            }).ToListAsync();
+            var resultado = context.Rols.Where(x => x.EsActivo == true).Count();
+            return resultado;
+        }
+
+        public int contarElementosInactivos()
+        {
+            var resultado = context.Rols.Where(x => x.EsActivo == false).Count();
+            return resultado;
+        }
+
+        public async Task<IEnumerable<RolViewModel>> Listadorol()
+        {
+            var entidad = await context.Rols
+                .Where(x => x.EsActivo == true)
+                .Select(a => new RolViewModel()
+                {
+                    Id = a.Id,
+                    Descripcion = a.Descripcion,
+                    Fecha = a.FechaRegistro
+
+                }).ToListAsync();
 
             return entidad;
         }
 
-        public async Task<IEnumerable<RolViewModel>> rolInactivo()
+
+        public async Task<IEnumerable<RolViewModel>> rolActivo(PaginacionViewModel paginacion)
         {
-            var entidad = await context.Rols.Where(x => x.EsActivo == false).Select(a => new RolViewModel()
-            {
-                Id = a.Id,
-                Descripcion = a.Descripcion,
-                Fecha = a.FechaRegistro
-            }).ToListAsync();
+            var entidad = await context.Rols
+                .Where(x => x.EsActivo == true)
+                .OrderBy(x => x.Id)
+                .Skip(paginacion.RecordsASaltar)
+                .Take(paginacion.RecordsPorPagina)
+                .Select(a => new RolViewModel()
+                {
+                    Id = a.Id,
+                    Descripcion = a.Descripcion,
+                    Fecha = a.FechaRegistro
+
+                }).ToListAsync();
+
+            return entidad;
+        }
+
+        public async Task<IEnumerable<RolViewModel>> rolInactivo(PaginacionViewModel paginacion)
+        {
+            var entidad = await context.Rols
+                .Where(x => x.EsActivo == false)
+                .OrderBy(x => x.Id)
+                .Skip(paginacion.RecordsASaltar)
+                .Take(paginacion.RecordsPorPagina)
+                .Select(a => new RolViewModel()
+                {
+                    Id = a.Id,
+                    Descripcion = a.Descripcion,
+                    Fecha = a.FechaRegistro
+
+                }).ToListAsync();
 
             return entidad;
         }

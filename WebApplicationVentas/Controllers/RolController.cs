@@ -15,16 +15,40 @@ namespace WebApplicationVentas.Controllers
             this.unitOfWork = unitOfWork;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(PaginacionViewModel paginacion)
         {
-            var rolActivos = await unitOfWork.repositorioRol.rolActivo();
-            var rolInactivos = await unitOfWork.repositorioRol.rolInactivo();
+            var rolActivos = await unitOfWork.repositorioRol.rolActivo(paginacion);
+            var total = unitOfWork.repositorioRol.contarElementos();
 
-            var modelo = new RolModel()
+            var modelo = new PaginacionRespuesta<RolViewModel>()
             {
-                rolActivos = rolActivos,
-                rolInactivos = rolInactivos
+                ElementosActivos = rolActivos,
+                Pagina = paginacion.Pagina,
+                RecordsPorPagina = paginacion.RecordsPorPagina,
+                CantidadTotalRecords = total,
+                BaseURL = "/Rol"
+
             };
+
+            return View(modelo);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ElementosInactivos(PaginacionViewModel paginacion)
+        {
+
+            var rolInactivos = await unitOfWork.repositorioRol.rolInactivo(paginacion);
+            var total = unitOfWork.repositorioRol.contarElementosInactivos();
+
+            var modelo = new PaginacionRespuesta<RolViewModel>()
+            {
+                ElementosInactivos = rolInactivos,
+                Pagina = paginacion.Pagina,
+                RecordsPorPagina = paginacion.RecordsPorPagina,
+                CantidadTotalRecords = total,
+                BaseURL = "/Rol/ElementosInactivos"
+            };
+
 
             return View(modelo);
         }

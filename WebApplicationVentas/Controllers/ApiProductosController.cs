@@ -1,4 +1,5 @@
 ﻿using Azure.Core;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Storage.Json;
@@ -19,10 +20,12 @@ namespace WebApplicationVentas.Controllers
     public class ApiProductosController : ControllerBase
     {
         private readonly IUnitOfWork unitOfWork;
+        private readonly IWebHostEnvironment webHost;
 
-        public ApiProductosController(IUnitOfWork unitOfWork)
+        public ApiProductosController(IUnitOfWork unitOfWork, IWebHostEnvironment webHost)
         {
             this.unitOfWork = unitOfWork;
+            this.webHost = webHost;
         }
 
         [HttpGet("GenerarCodigoBarras")]
@@ -73,8 +76,6 @@ namespace WebApplicationVentas.Controllers
 
 
         }
-
-
        
 
         //API Seccion Ventas
@@ -363,6 +364,54 @@ namespace WebApplicationVentas.Controllers
             return Ok(productos);
         }
 
+        [HttpGet("tieneStock/{id:int}")]
+        public async Task<ActionResult> tieneStock(int id)
+        {
+            //obtener el stock por el id del producto
+            var entidad = await unitOfWork.repositorioStockProductos.obtenerStockProductoPorId(id);
+            if (entidad == null)
+            {
+                var producto = await unitOfWork.repositorioProductos.obtenerProductoPorId(id);
+                producto.EsActivo = false;
+
+                unitOfWork.repositorioProductos.Eliminar(producto);
+                eliminarImagen(producto);
+
+                await unitOfWork.Complete();
+
+                return Ok(new { mensaje = "Producto eliminado correctamente", tipo = "exito" });
+            }
+
+            return Ok(new { mensaje = "El Producto contiene stock disponible", tipo = "error" });
+        }
+
+
+        [HttpPost("eliminarProducto")]
+        public async Task<ActionResult> eliminarProducto([FromBody] int id)
+        {
+
+            var existeProducto = await unitOfWork.repositorioProductos.existeProducto(id);
+            if (!existeProducto)
+            {
+                return BadRequest();
+            }
+
+            var stockProducto = await unitOfWork.repositorioStockProductos.obtenerStockProductoPorId(id);
+
+            var producto = await unitOfWork.repositorioProductos.obtenerProductoPorId(id);
+            producto.EsActivo = false;
+
+            unitOfWork.repositorioStockProductos.eliminar(stockProducto);
+            unitOfWork.repositorioProductos.Eliminar(producto);
+
+            await unitOfWork.Complete();
+            
+
+            return Ok();
+        }
+
+
+
         //[HttpGet("ticket/{id:int}")]
         //public async Task<IActionResult> ticket(int id)
         //{
@@ -400,8 +449,9 @@ namespace WebApplicationVentas.Controllers
 
             foreach (var item in resultado)
             {
-                
+
                 item.ListadoProductos = await unitOfWork.repositorioProductos.ProductosListado(item.IdProducto); 
+
             }
 
             return Ok(resultado);
@@ -419,6 +469,23 @@ namespace WebApplicationVentas.Controllers
             }
 
             return Ok(modelo);
+        }
+
+        private void eliminarImagen(Producto producto)
+        {
+            if (producto != null)
+            {
+                string carpeta = Path.Combine(webHost.WebRootPath, "Imagenes");
+                string imagen = Path.Combine(Directory.GetCurrentDirectory(), carpeta, producto.Imagen);
+
+                if (imagen != null)
+                {
+                    if (System.IO.File.Exists(imagen))
+                    {
+                        System.IO.File.Delete(imagen);
+                    }
+                }
+            }
         }
 
     }

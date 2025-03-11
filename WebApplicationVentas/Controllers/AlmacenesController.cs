@@ -16,24 +16,46 @@ namespace WebApplicationVentas.Controllers
         }
 
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(PaginacionViewModel paginacion)
         {
 
-            var modelo = await unitOfWork.repositorioAlmacenes.obtenerAlmacenesActivos();
-            var almaceesInactivos = await unitOfWork.repositorioAlmacenes.obteneAlmacenesInactivos();
+            var modelo = await unitOfWork.repositorioAlmacenes.obtenerAlmacenesActivos(paginacion);
+            var totalAlmacenes = unitOfWork.repositorioAlmacenes.contarElementos();
 
-
-            var almacenes = new AlmacenesModel()
+            var almacenes = new PaginacionRespuesta<AlmacenViewModel>()
             {
-                AlmaceesActivos = modelo,
-                AlmaceesInactivos = almaceesInactivos
+                ElementosActivos = modelo,
+                Pagina = paginacion.Pagina,
+                RecordsPorPagina = paginacion.RecordsPorPagina,
+                CantidadTotalRecords = totalAlmacenes,
+                BaseURL = "/Almacenes"
+
             };
 
 
             return View(almacenes);
-
         }
-      
+
+
+        [HttpGet]
+        public async Task<IActionResult> ElementosInactivos(PaginacionViewModel paginacion)
+        {
+            var almaceesInactivos = await unitOfWork.repositorioAlmacenes.obteneAlmacenesInactivos(paginacion);
+            var totalAlmacenes = unitOfWork.repositorioAlmacenes.contarElementosInactivos();
+
+            var almacenes = new PaginacionRespuesta<AlmacenViewModel>()
+            {
+                ElementosInactivos = almaceesInactivos,
+                Pagina = paginacion.Pagina,
+                RecordsPorPagina = paginacion.RecordsPorPagina,
+                CantidadTotalRecords = totalAlmacenes,
+                BaseURL = "/Almacenes/ElementosInactivos"
+
+            };
+
+
+            return View(almacenes);
+        }
 
         [HttpGet]
         public IActionResult Crear()

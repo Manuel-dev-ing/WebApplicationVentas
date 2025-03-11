@@ -15,20 +15,47 @@ namespace WebApplicationVentas.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(PaginacionViewModel paginacion)
         {
-            var tiposDocumentosActivos = await unitOfWork.repositorioTiposDocumentosProv.registrosActivos();
-            var tiposDocumentosInactivos = await unitOfWork.repositorioTiposDocumentosProv.registrosInactivos();
+            var tiposDocumentosActivos = await unitOfWork.repositorioTiposDocumentosProv.registrosActivos(paginacion);
+            var total = unitOfWork.repositorioTiposDocumentosProv.contarElementos();
 
-            var modelo = new TiposDocumentoModel()
+            var modelo = new PaginacionRespuesta<TiposDocumentoViewModel>()
             {
-                tiposDocumentosActivos = tiposDocumentosActivos,
-                tiposDocuemntosInactivos = tiposDocumentosInactivos
+                ElementosActivos = tiposDocumentosActivos,
+                Pagina = paginacion.Pagina,
+                RecordsPorPagina = paginacion.RecordsPorPagina,
+                CantidadTotalRecords = total,
+                BaseURL = "/TiposDocumentosProvCliente"
+
+
             };
 
 
             return View(modelo);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> ElementosInactivos(PaginacionViewModel paginacion)
+        {
+            var tiposDocumentosInactivos = await unitOfWork.repositorioTiposDocumentosProv.registrosInactivos(paginacion);
+
+            var total = unitOfWork.repositorioTiposDocumentosProv.contarElementosInactivos();
+
+            var almacenes = new PaginacionRespuesta<TiposDocumentoViewModel>()
+            {
+                ElementosInactivos = tiposDocumentosInactivos,
+                Pagina = paginacion.Pagina,
+                RecordsPorPagina = paginacion.RecordsPorPagina,
+                CantidadTotalRecords = total,
+                BaseURL = "/TiposDocumentosProvCliente/ElementosInactivos"
+
+            };
+
+
+            return View(almacenes);
+        }
+
 
         [HttpGet]
         public IActionResult Crear()
