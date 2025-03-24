@@ -2,6 +2,7 @@
     var cantidadNotificacion = 0;
     var ulNotificacion = document.querySelector('#ul-notificacion')
 
+    console.log("Notificaciones...")
     document.addEventListener('DOMContentLoaded', () => {
 
         obtener()

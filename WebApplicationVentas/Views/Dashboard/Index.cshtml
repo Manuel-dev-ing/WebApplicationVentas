@@ -1,0 +1,160 @@
+﻿
+@{
+
+	ViewData["Title"] = "Listado de Almacemes";
+
+}
+
+<div class="pagetitle">
+    <h1>Dashboard</h1>
+  
+</div><!-- End Page Title -->
+
+<div class="row">
+    <div class="col-lg-7">
+
+        <div class="row">
+
+            <!-- Sales Card -->
+            <div class="col-xxl-4 col-md-6">
+                <div class="card info-card sales-card">
+
+                    <div class="filter">
+                        <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                            <li class="dropdown-header text-start">
+                                <h6>Filtrar</h6>
+                            </li>
+
+                            <li><a class="dropdown-item drop-item" id="hoy">Hoy</a></li>
+                            <li><a class="dropdown-item drop-item" id="mes">Este Mes</a></li>
+                            <li><a class="dropdown-item drop-item" id="anio">Este Año</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="card-body">
+                        <h5 class="card-title">Ventas <span id="spanTipo">| Hoy</span></h5>
+
+                        <div class="d-flex align-items-center">
+                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                <i class="bi bi-graph-up"></i>
+                            </div>
+                            <div class="ps-3">
+                                <h6 id="H6total">0</h6>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div><!-- End Sales Card -->
+            
+            <!-- Revenue Card -->
+            <div class="col-xxl-4 col-md-6">
+                <div class="card info-card revenue-card">
+
+                    <div class="filter">
+                        <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                            <li class="dropdown-header text-start">
+                                <h6>Filtrar</h6>
+                            </li>
+
+                            <li><a class="dropdown-item drop-item" id="revenue-hoy">Hoy</a></li>
+                            <li><a class="dropdown-item drop-item" id="revenue-mes">Este Mes</a></li>
+                            <li><a class="dropdown-item drop-item" id="revenue-anio">Este Año</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="card-body">
+                        <h5 class="card-title">Ganancia <span id="spanTipoRevenue">| Hoy</span></h5>
+
+                        <div class="d-flex align-items-center">
+                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                <i class="bi bi-currency-dollar"></i>
+                            </div>
+                            <div class="ps-3">
+                                <h6>$<span id="H6totalRevenue">0</span></h6>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div><!-- End Revenue Card -->
+            
+            @* Compras *@
+            <div class="col-xxl-4 col-xl-12">
+
+                <div class="card info-card customers-card">
+
+
+                    <div class="card-body">
+                        <h5 class="card-title">Compras <span>| Hoy</span></h5>
+
+                        <div class="d-flex align-items-center">
+                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                <i class="bi bi-cart"></i>
+                            </div>
+                            <div class="ps-3">
+                                <h6>$<span id="Spancompras">0.00</span></h6>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div><!-- End Customers Card -->
+
+            <div class="col-12">
+                <div class="card info-card revenue-card">
+
+                    <div class="card-body">
+                        <h5 class="card-title">Compras <span id="spanTipoRevenue">| Año</span></h5>
+
+                        <div class="d-flex align-items-center">
+                            <div style="width: 600px;"><canvas id="acquisitions"></canvas></div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-5">
+        <!-- Recent Activity -->
+        <div class="card">
+
+            <div class="card-body">
+                <h5 class="card-title">Stock de productos por acabarse</h5>
+
+                <ul class="list-group list-group-flush" id="activity-notificacion">
+
+                    
+
+                </ul>
+
+            </div>
+
+        </div><!-- End Recent Activity -->
+
+    </div>
+
+  
+
+
+
+</div>
+@section Scripts {
+    <script src="~/js/Dashboard.js"></script>
+    @* <script src="~/js/notificaciones.js"></script> *@
+
+}
+
+
+

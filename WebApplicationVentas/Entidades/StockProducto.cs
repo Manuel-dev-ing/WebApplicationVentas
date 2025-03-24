@@ -10,7 +10,7 @@ public partial class StockProducto
     public int IdProducto { get; set; }
 
     public int IdAlmacen { get; set; }
-
+        
     public int StockActual { get; set; }
 
     public decimal Precio { get; set; }

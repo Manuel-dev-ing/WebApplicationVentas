@@ -411,7 +411,6 @@ namespace WebApplicationVentas.Controllers
         }
 
 
-
         //[HttpGet("ticket/{id:int}")]
         //public async Task<IActionResult> ticket(int id)
         //{
@@ -470,6 +469,73 @@ namespace WebApplicationVentas.Controllers
 
             return Ok(modelo);
         }
+
+
+        //Obtener el total de ventas por mes
+        [HttpPost("obtenerVentasDashboard")]
+        public async Task<ActionResult> obtenerVentasDashboard([FromBody] ConsultarVentaDTO consultarVentaDTO)
+        {
+
+            var resultado = unitOfWork.repositorioVentas.obtenerTotalVentas(consultarVentaDTO.fechaInicio, consultarVentaDTO.fechaFin);
+
+
+            return Ok(resultado);
+        }
+
+        //Obtener el total de ventas por dia
+        [HttpPost("obtenerVentasDia")]
+        public async Task<ActionResult> obtenerVentasDia([FromBody] string fecha)
+        {
+
+            var resultado = unitOfWork.repositorioVentas.obtenerVentasDia(fecha);
+
+
+            return Ok(resultado);
+        }
+
+        //optiene las ganancias totales del mes o Año
+        [HttpPost("obtenerGanancias")]
+        public async Task<ActionResult> obtenerGanancias([FromBody] ConsultarVentaDTO consultarVentaDTO)
+        {
+
+            var resultado = unitOfWork.repositorioVentas.obtenerGananciasVentas(consultarVentaDTO.fechaInicio, consultarVentaDTO.fechaFin);
+
+            var total = resultado;
+
+            return Ok(resultado);
+        }
+
+        [HttpPost("obtenerGananciasDia")]
+        public async Task<ActionResult> obtenerGananciasDia([FromBody] string fecha)
+        {
+
+            var resultado = unitOfWork.repositorioVentas.obtenerGananciasVentasDia(fecha);
+
+            var total = resultado;
+
+            return Ok(resultado);
+        }
+
+        //Compras
+        [HttpPost("obtenerComprasDia")]
+        public async Task<ActionResult> obtenerComprasDia([FromBody] string fecha)
+        {
+
+            var resultado = unitOfWork.repositorioCompras.obtenerComprasDia(fecha);
+
+            return Ok(resultado);
+        }
+
+        [HttpGet("obtenerCompras")]
+        public async Task<ActionResult> obtenerCompras()
+        {
+
+            var resultado = await unitOfWork.repositorioCompras.obtenerCompras();
+
+            return Ok(resultado);
+        }
+
+
 
         private void eliminarImagen(Producto producto)
         {

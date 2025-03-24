@@ -11,6 +11,8 @@ namespace WebApplicationVentas.Servicios
         Task<List<AlmacenesDTO>> listadoAlmacenes();
         Task<List<CompraDetalleDTO>> listadoDetalleCompra(int id);
         Task<List<ProveedoresDTO>> listadoProveedores();
+        Task<List<ComprasListadoDTO>> obtenerCompras();
+        decimal obtenerComprasDia(string fecha);
         Task<List<ComprasListadoDTO>> obtenerComprasPorFecha(string fechaInicio, string fechaFin);
     }
     public class RepositorioCompras: IRepositorioCompras
@@ -94,6 +96,35 @@ namespace WebApplicationVentas.Servicios
                 }).ToListAsync();
 
             return entidad;
+        }
+
+
+        public decimal obtenerComprasDia(string fecha)
+        {
+
+            var dateStart = Convert.ToDateTime(fecha);
+
+            var ventas = context.EntradaProductos
+                .Where(v => v.FechaRegistro.Date == dateStart)
+                .Sum(x => x.Total);
+
+            return ventas;
+        }
+
+        public async Task<List<ComprasListadoDTO>> obtenerCompras()
+        {
+            var compra = await context.EntradaProductos.Select(x => new ComprasListadoDTO()
+            {
+                Id = x.Id,
+                Proveedor = x.IdProveedor.ToString(),
+                Almacen = x.IdAlmacen.ToString(),
+                SubTotal = x.SubTotal,
+                Total = x.Total,
+                FechaRegistro = x.FechaRegistro
+
+            }).ToListAsync();
+
+            return compra;
         }
 
     }

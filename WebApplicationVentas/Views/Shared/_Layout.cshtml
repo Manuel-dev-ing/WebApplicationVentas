@@ -147,9 +147,7 @@
                         <li class="dropdown-header">
                             <h6>@nombre</h6>
                         </li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
+                     
                         <li>
                             <a class="dropdown-item d-flex align-items-center" asp-action="Index" asp-controller="Negocio">
                                 <i class="bi bi-gear"></i>
@@ -180,7 +178,12 @@
     <aside id="sidebar" class="sidebar">
 
         <ul class="sidebar-nav" id="sidebar-nav">
-
+            <li class="nav-item">
+                <a class="nav-link collapsed" asp-action="Index" asp-controller="Dashboard">
+                    <i class="bi bi-grid"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
             <li class="nav-item">
                 <a class="nav-link collapsed" asp-action="Index" asp-controller="Almacenes">
                     <i class="bi bi-person"></i>
