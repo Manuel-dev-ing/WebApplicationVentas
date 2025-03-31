@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -70,7 +71,7 @@ namespace WebApplicationVentas.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Guardar(UsuariosCreacionViewModel model)
+        public async Task<IActionResult> Crear(UsuariosCreacionViewModel model)
         {
 
             if (!ModelState.IsValid)
@@ -91,6 +92,7 @@ namespace WebApplicationVentas.Controllers
             };
 
             var resultado = await userManager.CreateAsync(usuario, password: model.Password);
+            
 
             if (resultado.Succeeded)
             {
@@ -221,11 +223,14 @@ namespace WebApplicationVentas.Controllers
                 return View(model);
             }
 
+
             var resultado = await signInManager.PasswordSignInAsync(model.Correo, model.Password, isPersistent: false, lockoutOnFailure: false);
+
 
             if (resultado.Succeeded) {
 
-                return RedirectToAction("Index", "Home");
+
+                return RedirectToAction("Index", "Dashboard");
             
             }
             else
@@ -236,7 +241,7 @@ namespace WebApplicationVentas.Controllers
 
         }
 
-        [HttpPost]
+        [HttpGet]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);

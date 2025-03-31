@@ -8,7 +8,7 @@ namespace WebApplicationVentas.Servicios
     public interface IRepositorioUsuarios
     {
         void actualizar(Usuario usuario);
-        Task<Usuario> buscarPorId(int id);
+        Task<Usuario> buscarPorId(Usuario usuario);
         Task<Usuario> buscarUsuarioPorCorreo(string correo);
         int contarElementos();
         int contarElementosInactivos();
@@ -107,10 +107,10 @@ namespace WebApplicationVentas.Servicios
         }
 
 
-        public async Task<Usuario> buscarPorId(int id)
+        public async Task<Usuario> buscarPorId(Usuario usuario)
         {
-            var usuario = await context.Usuarios.FirstOrDefaultAsync(x=> x.Id == id);
-            return usuario;
+            var entidad = await context.Usuarios.FirstOrDefaultAsync(x=> x.Id == usuario.Id);
+            return entidad;
         }
 
 

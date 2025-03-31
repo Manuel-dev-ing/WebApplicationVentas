@@ -14,6 +14,7 @@ namespace WebApplicationVentas.Servicios
         void Guardar(Rol rol);
         Task<IEnumerable<RolViewModel>> Listadorol();
         Task<Rol> obtenerPorId(int id);
+        Task<Rol> obtenerRolPorNombre(string nombreRol);
         Task<IEnumerable<RolViewModel>> rolActivo(PaginacionViewModel paginacion);
         Task<IEnumerable<RolViewModel>> rolInactivo(PaginacionViewModel paginacion);
     }
@@ -116,6 +117,17 @@ namespace WebApplicationVentas.Servicios
             return entidad;
 
         }
+
+        public async Task<Rol> obtenerRolPorNombre(string nombreRol)
+        {
+
+            var entidad = await context.Rols.Where(x => x.Descripcion == nombreRol).FirstOrDefaultAsync();
+            return entidad;
+        }
+
+
+
+
 
     }
 }

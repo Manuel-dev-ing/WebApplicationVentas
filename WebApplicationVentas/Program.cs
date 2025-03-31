@@ -32,6 +32,7 @@ builder.Services.AddTransient<IRepositorioNegocio, RepositorioNegocio>();
 
 builder.Services.AddTransient<IRepositorioUsuarios, RepositorioUsuarios>();
 builder.Services.AddTransient<IUserStore<Usuario>, UsuarioStore>();
+builder.Services.AddTransient<IUserClaimStore<Usuario>, UsuarioStore>();
 
 builder.Services.AddTransient<SignInManager<Usuario>>();
 
@@ -97,7 +98,7 @@ app.MapControllers();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Almacenes}/{action=Index}/{id?}");
+    pattern: "{controller=Usuarios}/{action=Login}/{id?}");
 
 IWebHostEnvironment env = app.Environment;
 Rotativa.AspNetCore.RotativaConfiguration.Setup(env.WebRootPath, "../Rotativa/Windows");

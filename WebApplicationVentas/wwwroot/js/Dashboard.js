@@ -339,7 +339,7 @@
                     li.innerHTML += `
                         <a>
                             <p class="fs-6 fw-semibold">${producto.descripcion}</p>
-                            <p class="fs-6">El Stock actual es de ${elemento.stockActual}</p>
+                            <p class="fs-6">Solo quedan ${elemento.stockActual} unidades en inventario</p>
                         </a>
                     `;
 
@@ -349,7 +349,7 @@
                     li.innerHTML += `
                         <a>
                             <p class="fs-6 fw-semibold">${producto.descripcion}</p>
-                            <p class="fs-6">El Stock actual del producto tiene ${elemento.stockActual}</p>
+                            <p class="fs-6">Solo quedan ${elemento.stockActual} unidades en inventario</p>
                             
                         </a>
                     `;
